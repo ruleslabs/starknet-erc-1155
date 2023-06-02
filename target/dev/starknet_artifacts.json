@@ -1,0 +1,1 @@
+{"version":1,"contracts":[{"id":"MTDN4T6JAAN46","package_name":"erc1155","contract_name":"ERC1155","artifacts":{"sierra":"erc1155_ERC1155.sierra.json","casm":null}},{"id":"OO8LCDSRGO4HS","package_name":"erc1155","contract_name":"ERC165","artifacts":{"sierra":"erc1155_ERC165.sierra.json","casm":null}}]}
