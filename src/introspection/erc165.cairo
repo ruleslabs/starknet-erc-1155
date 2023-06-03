@@ -19,6 +19,7 @@ mod ERC165 {
       if interface_id == erc165::IERC165_ID {
         return true;
       }
+
       supported_interfaces::read(interface_id)
     }
   }
