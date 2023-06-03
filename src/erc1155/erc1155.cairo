@@ -1,5 +1,8 @@
 #[abi]
 trait ERC1155ABI {
+  fn uri(tokenId: u256) -> Array<felt252>;
+
+  fn supports_interface(interface_id: u32) -> bool;
 }
 
 #[contract]
@@ -11,12 +14,16 @@ mod ERC1155 {
   use zeroable::Zeroable;
   use starknet::contract_address::ContractAddressZeroable;
 
-  use erc1155::utils::serde::SpanSerde;
-  use erc1155::introspection::erc165::ERC165;
-  use erc1155::erc1155::interface::IERC1155ReceiverDispatcher;
-  use erc1155::erc1155::interface::IERC1155ReceiverDispatcherTrait;
-  use erc1155::introspection::erc165::IERC165Dispatcher;
-  use erc1155::introspection::erc165::IERC165DispatcherTrait;
+  // local
+  use rules_erc1155::utils::serde::SpanSerde;
+  use rules_erc1155::introspection::erc165::ERC165;
+  use rules_erc1155::erc1155;
+
+  // Dispatchers
+  use super::super::interface::IERC1155ReceiverDispatcher;
+  use super::super::interface::IERC1155ReceiverDispatcherTrait;
+  use rules_erc1155::introspection::erc165::IERC165Dispatcher;
+  use rules_erc1155::introspection::erc165::IERC165DispatcherTrait;
 
   // Storage //
 
@@ -30,6 +37,82 @@ mod ERC1155 {
 
   // TODO: events
 
+  impl ERC1155 of erc1155::interface::IERC1155 {
+    fn uri(tokenId: u256) -> Array<felt252> {
+      let mut ret = ArrayTrait::<felt252>::new();
+      let len: usize = _uri::read(0).try_into().unwrap();
+      let mut i: usize = 1;
+
+      loop {
+        if (i > len) {
+          break ();
+        }
+
+        ret.append(_uri::read(i));
+        i = i + 1;
+      };
+
+      ret
+    }
+
+    fn supports_interface(interface_id: u32) -> bool {
+      if (
+        interface_id == erc1155::interface::IERC1155_ID |
+        interface_id == erc1155::interface::IERC1155_METADATA_ID
+      ) {
+        true
+      } else {
+        ERC165::supports_interface(interface_id)
+      }
+    }
+
+    fn balance_of(account: starknet::ContractAddress, id: u256) -> u256 {
+      _balances::read((id, account))
+    }
+
+    fn balance_of_batch(accounts: Span<starknet::ContractAddress>, ids: Span<u256>) {
+      // TODO
+    }
+
+    fn set_approval_for_all(operator: starknet::ContractAddress, approved: bool) {
+      let caller = starknet::get_caller_address();
+
+      _set_approval_for_all(owner: caller, :operator, :approved);
+    }
+
+    fn is_approved_for_all(account: starknet::ContractAddress, operator: starknet::ContractAddress) -> bool {
+      _operator_approvals::read((account, operator))
+    }
+
+    fn safe_transfer_from(
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      id: u256,
+      amount: u256,
+      data: Span<felt252>
+    ) {
+      let caller = starknet::get_caller_address();
+      assert(from == caller, 'ERC1155: caller not allowed');
+      assert(is_approved_for_all(account: from, operator: caller), 'ERC1155: caller not allowed');
+
+      _safe_transfer_from(:from, :to, :id, :amount, :data);
+    }
+
+    fn safe_batch_transfer_from(
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      ids: Span<u256>,
+      amounts: Span<u256>,
+      data: Span<felt252>
+    ) {
+      let caller = starknet::get_caller_address();
+      assert(from == caller, 'ERC1155: caller not allowed');
+      assert(is_approved_for_all(account: from, operator: caller), 'ERC1155: caller not allowed');
+
+      _safe_batch_transfer_from(:from, :to, :ids, :amounts, :data);
+    }
+  }
+
   // Init //
 
   #[constructor]
@@ -41,53 +124,38 @@ mod ERC1155 {
 
   #[view]
   fn uri(tokenId: u256) -> Array<felt252> {
-    let mut ret = ArrayTrait::<felt252>::new();
-    let len: usize = _uri::read(0).try_into().unwrap();
-    let mut i: usize = 1;
-
-    loop {
-      if (i > len) {
-        break ();
-      }
-
-      ret.append(_uri::read(i));
-      i = i + 1;
-    };
-
-    ret
+    ERC1155::uri(:tokenId)
   }
 
   // ERC165 //
 
   #[view]
   fn supports_interface(interface_id: u32) -> bool {
-    ERC165::supports_interface(interface_id)
+    ERC1155::supports_interface(:interface_id)
   }
 
   // Balance //
 
   #[view]
   fn balance_of(account: starknet::ContractAddress, id: u256) -> u256 {
-    _balances::read((id, account))
+    ERC1155::balance_of(:account, :id)
   }
 
   #[view]
   fn balance_of_batch(accounts: Span<starknet::ContractAddress>, ids: Span<u256>) {
-    // TODO
+    ERC1155::balance_of_batch(:accounts, :ids)
   }
 
   // Approval //
 
   #[external]
   fn set_approval_for_all(operator: starknet::ContractAddress, approved: bool) {
-    let caller = starknet::get_caller_address();
-
-    _set_approval_for_all(owner: caller, :operator, :approved);
+    ERC1155::set_approval_for_all(:operator, :approved)
   }
 
   #[view]
   fn is_approved_for_all(account: starknet::ContractAddress, operator: starknet::ContractAddress) -> bool {
-    _operator_approvals::read((account, operator))
+    ERC1155::is_approved_for_all(:account, :operator)
   }
 
   // Transfer //
@@ -100,11 +168,7 @@ mod ERC1155 {
     amount: u256,
     data: Span<felt252>
   ) {
-    let caller = starknet::get_caller_address();
-    assert(from == caller, 'ERC1155: caller not allowed');
-    assert(is_approved_for_all(account: from, operator: caller), 'ERC1155: caller not allowed');
-
-    _safe_transfer_from(:from, :to, :id, :amount, :data);
+    ERC1155::safe_transfer_from(:from, :to, :id, :amount, :data)
   }
 
   #[external]
@@ -115,11 +179,7 @@ mod ERC1155 {
     amounts: Span<u256>,
     data: Span<felt252>
   ) {
-    let caller = starknet::get_caller_address();
-    assert(from == caller, 'ERC1155: caller not allowed');
-    assert(is_approved_for_all(account: from, operator: caller), 'ERC1155: caller not allowed');
-
-    _safe_batch_transfer_from(:from, :to, :ids, :amounts, :data);
+    ERC1155::safe_batch_transfer_from(:from, :to, :ids, :amounts, :data)
   }
 
   // Mint //
@@ -199,15 +259,13 @@ mod ERC1155 {
     };
 
     // Safe transfer check
-    if (ids.len() == 1) {
-      let id = *ids.at(0);
-      let amount = *amounts.at(0);
+    if (to.is_non_zero()) {
+      if (ids.len() == 1) {
+        let id = *ids.at(0);
+        let amount = *amounts.at(0);
 
-      if (to.is_non_zero()) {
         _do_safe_transfer_acceptance_check(:operator, :from, :to, :id, :amount, :data);
-      }
-    } else {
-      if (to.is_non_zero()) {
+      } else {
         _do_safe_batch_transfer_acceptance_check(:operator, :from, :to, :ids, :amounts, :data);
       }
     }
@@ -257,13 +315,13 @@ mod ERC1155 {
   ) {
     let ERC165 = IERC165Dispatcher { contract_address: to };
 
-    if (ERC165.supports_interface(erc1155::erc1155::interface::IERC1155_RECEIVER_ID)) {
+    if (ERC165.supports_interface(erc1155::interface::IERC1155_RECEIVER_ID)) {
       // TODO: add casing fallback mechanism
 
       let ERC1155Receiver = IERC1155ReceiverDispatcher { contract_address: to };
 
       let response = ERC1155Receiver.on_erc1155_received(:operator, :from, :id, value: amount, :data);
-      assert(response == erc1155::erc1155::interface::ON_ERC1155_RECEIVED_SELECTOR, 'ERC1155: safe transfer failed');
+      assert(response == erc1155::interface::ON_ERC1155_RECEIVED_SELECTOR, 'ERC1155: safe transfer failed');
     } else {
       assert(
         ERC165.supports_interface(rules_account::account::interface::IACCOUNT_ID) == true,
@@ -283,13 +341,13 @@ mod ERC1155 {
   ) {
     let ERC165 = IERC165Dispatcher { contract_address: to };
 
-    if (ERC165.supports_interface(erc1155::erc1155::interface::IERC1155_RECEIVER_ID)) {
+    if (ERC165.supports_interface(erc1155::interface::IERC1155_RECEIVER_ID)) {
       // TODO: add casing fallback mechanism
 
       let ERC1155Receiver = IERC1155ReceiverDispatcher { contract_address: to };
 
       let response = ERC1155Receiver.on_erc1155_batch_received(:operator, :from, :ids, values: amounts, :data);
-      assert(response == erc1155::erc1155::interface::ON_ERC1155_RECEIVED_SELECTOR, 'ERC1155: safe transfer failed');
+      assert(response == erc1155::interface::ON_ERC1155_RECEIVED_SELECTOR, 'ERC1155: safe transfer failed');
     } else {
       assert(
         ERC165.supports_interface(rules_account::account::interface::IACCOUNT_ID) == true,

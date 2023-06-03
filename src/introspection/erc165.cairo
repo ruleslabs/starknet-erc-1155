@@ -8,7 +8,7 @@ trait IERC165 {
 
 #[contract]
 mod ERC165 {
-  use erc1155::introspection::erc165;
+  use rules_erc1155::introspection::erc165;
 
   struct Storage {
     supported_interfaces: LegacyMap<u32, bool>
