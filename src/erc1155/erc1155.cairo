@@ -276,7 +276,7 @@ mod ERC1155 {
 
   #[internal]
   fn _set_approval_for_all(owner: starknet::ContractAddress, operator: starknet::ContractAddress, approved: bool) {
-    assert(owner != operator, 'ERC1155: cannot approve owner');
+    assert(owner != operator, 'ERC1155: self approval');
 
     _operator_approvals::write((owner, operator), approved);
 

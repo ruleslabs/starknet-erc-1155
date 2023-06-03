@@ -36,6 +36,10 @@ fn ZERO() -> starknet::ContractAddress {
   Zeroable::zero()
 }
 
+fn OWNER() -> starknet::ContractAddress {
+  starknet::contract_address_const::<10>()
+}
+
 fn RECIPIENT() -> starknet::ContractAddress {
   starknet::contract_address_const::<20>()
 }
@@ -222,7 +226,60 @@ fn test_is_approved_for_all() {
   assert(ERC1155::is_approved_for_all(owner, operator), 'Should be approved');
 }
 
-// TODO: test_approve_from_operator
+#[test]
+#[available_gas(2000000)]
+fn test_set_approval_for_all() {
+  testing::set_caller_address(OWNER());
+  assert(!ERC1155::is_approved_for_all(OWNER(), OPERATOR()), 'Invalid default value');
+
+  ERC1155::set_approval_for_all(OPERATOR(), true);
+  assert(ERC1155::is_approved_for_all(OWNER(), OPERATOR()), 'Operator not approved correctly');
+
+  ERC1155::set_approval_for_all(OPERATOR(), false);
+  assert(!ERC1155::is_approved_for_all(OWNER(), OPERATOR()), 'Approval not revoked correctly');
+}
+
+#[test]
+#[available_gas(2000000)]
+#[should_panic(expected: ('ERC1155: self approval', ))]
+fn test_set_approval_for_all_owner_equal_operator_true() {
+  testing::set_caller_address(OWNER());
+  ERC1155::set_approval_for_all(OWNER(), true);
+}
+
+#[test]
+#[available_gas(2000000)]
+#[should_panic(expected: ('ERC1155: self approval', ))]
+fn test_set_approval_for_all_owner_equal_operator_false() {
+  testing::set_caller_address(OWNER());
+  ERC1155::set_approval_for_all(OWNER(), false);
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test__set_approval_for_all() {
+  assert(!ERC1155::is_approved_for_all(OWNER(), OPERATOR()), 'Invalid default value');
+
+  ERC1155::_set_approval_for_all(OWNER(), OPERATOR(), true);
+  assert(ERC1155::is_approved_for_all(OWNER(), OPERATOR()), 'Operator not approved correctly');
+
+  ERC1155::_set_approval_for_all(OWNER(), OPERATOR(), false);
+  assert(!ERC1155::is_approved_for_all(OWNER(), OPERATOR()), 'Operator not approved correctly');
+}
+
+#[test]
+#[available_gas(2000000)]
+#[should_panic(expected: ('ERC1155: self approval', ))]
+fn test__set_approval_for_all_owner_equal_operator_true() {
+  ERC1155::_set_approval_for_all(OWNER(), OWNER(), true);
+}
+
+#[test]
+#[available_gas(2000000)]
+#[should_panic(expected: ('ERC1155: self approval', ))]
+fn test__set_approval_for_all_owner_equal_operator_false() {
+  ERC1155::_set_approval_for_all(OWNER(), OWNER(), false);
+}
 
 //
 // Mint
