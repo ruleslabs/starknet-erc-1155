@@ -72,6 +72,15 @@ mod ERC1155 {
   ) {}
 
   //
+  // Constructor
+  //
+
+  #[constructor]
+  fn constructor(uri_: Array<felt252>) {
+    initializer(uri_)
+  }
+
+  //
   // Interface impl
   //
 
@@ -154,15 +163,6 @@ mod ERC1155 {
   }
 
   //
-  // Init
-  //
-
-  #[constructor]
-  fn constructor(uri_: Array<felt252>) {
-    _set_URI(uri_);
-  }
-
-  //
   // Getters
   //
 
@@ -229,6 +229,13 @@ mod ERC1155 {
   //
   // Internals
   //
+
+  // Init
+
+  #[internal]
+  fn initializer(uri_: Array<felt252>) {
+    _set_URI(uri_);
+  }
 
   // Mint
 
