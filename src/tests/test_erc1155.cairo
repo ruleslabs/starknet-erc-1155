@@ -282,6 +282,26 @@ fn test__set_approval_for_all_owner_equal_operator_false() {
 }
 
 //
+// Safe transfer
+//
+
+#[test]
+#[available_gas(20000000)]
+fn test_transfer_from_owner() {
+    let owner = setup();
+    let recipient = setup_receiver();
+    let token_id = TOKEN_ID();
+    let amount = AMOUNT();
+
+    assert_state_before_transfer(:owner, :recipient, :token_id, :amount);
+
+    testing::set_caller_address(owner);
+    ERC1155::safe_transfer_from(from: owner, to: recipient, id: token_id, :amount, data: DATA(true));
+
+    assert_state_after_transfer(:owner, :recipient, :token_id, :amount);
+}
+
+//
 // Mint
 //
 
@@ -304,6 +324,26 @@ fn test_mint() {
 //
 // Helpers
 //
+
+fn assert_state_before_transfer(
+  owner: starknet::ContractAddress,
+  recipient: starknet::ContractAddress,
+  token_id: u256,
+  amount: u256
+) {
+  assert(ERC1155::balance_of(owner, token_id) == amount, 'Balance of owner before');
+  assert(ERC1155::balance_of(recipient, token_id) == 0.into(), 'Balance of recipient before');
+}
+
+fn assert_state_after_transfer(
+  owner: starknet::ContractAddress,
+  recipient: starknet::ContractAddress,
+  token_id: u256,
+  amount: u256
+) {
+  assert(ERC1155::balance_of(owner, token_id) == 0.into(), 'Balance of owner after');
+  assert(ERC1155::balance_of(recipient, token_id) == amount, 'Balance of recipient after');
+}
 
 fn assert_state_before_mint(recipient: starknet::ContractAddress, token_id: u256) {
   assert(ERC1155::balance_of(recipient, token_id) == 0.into(), 'Balance of recipient before');

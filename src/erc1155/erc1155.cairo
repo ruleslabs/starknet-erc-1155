@@ -141,8 +141,7 @@ mod ERC1155 {
       data: Span<felt252>
     ) {
       let caller = starknet::get_caller_address();
-      assert(from == caller, 'ERC1155: caller not allowed');
-      assert(is_approved_for_all(account: from, operator: caller), 'ERC1155: caller not allowed');
+      assert(from == caller | is_approved_for_all(account: from, operator: caller), 'ERC1155: caller not allowed');
 
       _safe_transfer_from(:from, :to, :id, :amount, :data);
     }
@@ -155,8 +154,7 @@ mod ERC1155 {
       data: Span<felt252>
     ) {
       let caller = starknet::get_caller_address();
-      assert(from == caller, 'ERC1155: caller not allowed');
-      assert(is_approved_for_all(account: from, operator: caller), 'ERC1155: caller not allowed');
+      assert(from == caller | is_approved_for_all(account: from, operator: caller), 'ERC1155: caller not allowed');
 
       _safe_batch_transfer_from(:from, :to, :ids, :amounts, :data);
     }
@@ -299,8 +297,9 @@ mod ERC1155 {
     let operator = starknet::get_caller_address();
 
     let mut i: usize = 0;
+    let len = ids.len();
     loop {
-      if (ids.len() == i) {
+      if (i >= len) {
         break ();
       }
 
