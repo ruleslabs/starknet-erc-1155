@@ -1,1 +1,0 @@
-{"version":1,"contracts":[{"id":"TBKN1DG5FRAFS","package_name":"rules_erc1155","contract_name":"ERC165","artifacts":{"sierra":"rules_erc1155_ERC165.sierra.json","casm":null}},{"id":"U05KLAS13BU06","package_name":"rules_erc1155","contract_name":"ERC1155","artifacts":{"sierra":"rules_erc1155_ERC1155.sierra.json","casm":null}}]}
