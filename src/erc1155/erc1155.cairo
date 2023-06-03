@@ -9,8 +9,7 @@ trait ERC1155ABI {
 mod ERC1155 {
   use array::{ Span, ArrayTrait, SpanTrait, ArrayDrop };
   use option::OptionTrait;
-  use traits::Into;
-  use traits::TryInto;
+  use traits::{ Into, TryInto };
   use zeroable::Zeroable;
   use starknet::contract_address::ContractAddressZeroable;
   use rules_account::account;
@@ -196,9 +195,35 @@ mod ERC1155 {
   // Internals
   //
 
-  // TODO: Mint
+  // Mint
 
-  // TODO: Burn
+  #[internal]
+  fn _mint(to: starknet::ContractAddress, id: u256, amount: u256, data: Span<felt252>) {
+    assert(to.is_non_zero(), 'ERC1155: mint to 0 addr');
+    let (ids, amounts) = _as_singleton_spans(id, amount);
+    _update(from: Zeroable::zero(), :to, :ids, :amounts, :data);
+  }
+
+  #[internal]
+  fn _mint_batch(to: starknet::ContractAddress, ids: Span<u256>, amounts: Span<u256>, data: Span<felt252>) {
+    assert(to.is_non_zero(), 'ERC1155: mint to 0 addr');
+    _update(from: Zeroable::zero(), :to, :ids, :amounts, :data);
+  }
+
+  // Burn
+
+  #[internal]
+  fn _burn(from: starknet::ContractAddress, id: u256, amount: u256, data: Span<felt252>) {
+    assert(from.is_non_zero(), 'ERC1155: burn from 0 addr');
+    let (ids, amounts) = _as_singleton_spans(id, amount);
+    _update(:from, to: Zeroable::zero(), :ids, :amounts, :data);
+  }
+
+  #[internal]
+  fn _burn_batch(from: starknet::ContractAddress, ids: Span<u256>, amounts: Span<u256>, data: Span<felt252>) {
+    assert(from.is_non_zero(), 'ERC1155: burn from 0 addr');
+    _update(:from, to: Zeroable::zero(), :ids, :amounts, :data);
+  }
 
   // Setters
 
@@ -278,8 +303,7 @@ mod ERC1155 {
     assert(to.is_non_zero(), 'ERC1155: transfer to 0 addr');
     assert(from.is_non_zero(), 'ERC1155: transfer from 0 addr');
 
-    let ids = _as_singleton_span(id);
-    let amounts = _as_singleton_span(amount);
+    let (ids, amounts) = _as_singleton_spans(id, amount);
 
     _update(:from, :to, :ids, :amounts, :data);
   }
@@ -356,9 +380,13 @@ mod ERC1155 {
 
   // TODO: make trait
   #[internal]
-  fn _as_singleton_span(element: u256) -> Span<u256> {
-    let mut arr = ArrayTrait::<u256>::new();
-    arr.append(element);
-    arr.span()
+  fn _as_singleton_spans(element1: u256, element2: u256) -> (Span<u256>, Span<u256>) {
+    let mut arr1 = ArrayTrait::<u256>::new();
+    let mut arr2 = ArrayTrait::<u256>::new();
+
+    arr1.append(element1);
+    arr2.append(element2);
+
+    (arr1.span(), arr2.span())
   }
 }
