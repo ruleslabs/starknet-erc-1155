@@ -37,7 +37,42 @@ mod ERC1155 {
   }
 
   //
-  // TODO: Events
+  // Events
+  //
+
+  #[event]
+  fn TransferSingle(
+    operator: starknet::ContractAddress,
+    from: starknet::ContractAddress,
+    to: starknet::ContractAddress,
+    id: u256,
+    value: u256
+  ) {}
+
+  #[event]
+  fn TransferBatch(
+    operator: starknet::ContractAddress,
+    from: starknet::ContractAddress,
+    to: starknet::ContractAddress,
+    ids: Span<u256>,
+    values: Span<u256>
+  ) {}
+
+  #[event]
+  fn ApprovalForAll(
+    account: starknet::ContractAddress,
+    operator: starknet::ContractAddress,
+    approved: bool
+  ) {}
+
+  #[event]
+  fn URI(
+    value: Array<felt252>,
+    id: u256
+  ) {}
+
+  //
+  // Interface impl
   //
 
   impl ERC1155 of erc1155::interface::IERC1155 {
@@ -236,7 +271,10 @@ mod ERC1155 {
   fn _set_approval_for_all(owner: starknet::ContractAddress, operator: starknet::ContractAddress, approved: bool) {
     assert(owner != operator, 'ERC1155: cannot approve owner');
 
-    _operator_approvals::write((owner, operator), approved)
+    _operator_approvals::write((owner, operator), approved);
+
+    // Events
+    ApprovalForAll(account: owner, :operator, :approved);
   }
 
   // Balances update
@@ -285,8 +323,15 @@ mod ERC1155 {
         let id = *ids.at(0);
         let amount = *amounts.at(0);
 
+        // Event
+        TransferSingle(:operator, :from, :to, :id, value: amount);
+
         _do_safe_transfer_acceptance_check(:operator, :from, :to, :id, :amount, :data);
       } else {
+
+        // Event
+        TransferBatch(:operator, :from, :to, :ids, values: amounts);
+
         _do_safe_batch_transfer_acceptance_check(:operator, :from, :to, :ids, :amounts, :data);
       }
     }
@@ -378,7 +423,6 @@ mod ERC1155 {
 
   // Utils
 
-  // TODO: make trait
   #[internal]
   fn _as_singleton_spans(element1: u256, element2: u256) -> (Span<u256>, Span<u256>) {
     let mut arr1 = ArrayTrait::<u256>::new();
