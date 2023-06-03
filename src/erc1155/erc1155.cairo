@@ -18,7 +18,7 @@ mod ERC1155 {
   use rules_erc1155::utils::serde::SpanSerde;
   use rules_erc1155::introspection::erc165::ERC165;
   use rules_erc1155::erc1155;
-  use rules_erc1155::utils::storage::Felt252ArrayStorageAccess;
+  use rules_erc1155::utils::storage::Felt252SpanStorageAccess;
 
   // Dispatchers
   use super::super::interface::IERC1155ReceiverDispatcher;
@@ -33,7 +33,7 @@ mod ERC1155 {
   struct Storage {
     _balances: LegacyMap<(u256, starknet::ContractAddress), u256>,
     _operator_approvals: LegacyMap<(starknet::ContractAddress, starknet::ContractAddress), bool>,
-    _uri: Array<felt252>,
+    _uri: Span<felt252>,
   }
 
   //
@@ -76,7 +76,7 @@ mod ERC1155 {
   //
 
   #[constructor]
-  fn constructor(uri_: Array<felt252>) {
+  fn constructor(uri_: Span<felt252>) {
     initializer(uri_)
   }
 
@@ -85,7 +85,7 @@ mod ERC1155 {
   //
 
   impl ERC1155 of erc1155::interface::IERC1155 {
-    fn uri(tokenId: u256) -> Array<felt252> {
+    fn uri(tokenId: u256) -> Span<felt252> {
       _uri::read()
     }
 
@@ -167,7 +167,7 @@ mod ERC1155 {
   //
 
   #[view]
-  fn uri(tokenId: u256) -> Array<felt252> {
+  fn uri(tokenId: u256) -> Span<felt252> {
     ERC1155::uri(:tokenId)
   }
 
@@ -233,7 +233,7 @@ mod ERC1155 {
   // Init
 
   #[internal]
-  fn initializer(uri_: Array<felt252>) {
+  fn initializer(uri_: Span<felt252>) {
     _set_URI(uri_);
   }
 
@@ -270,7 +270,7 @@ mod ERC1155 {
   // Setters
 
   #[internal]
-  fn _set_URI(new_URI: Array<felt252>) {
+  fn _set_URI(new_URI: Span<felt252>) {
       _uri::write(new_URI);
   }
 

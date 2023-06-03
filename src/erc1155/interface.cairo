@@ -8,7 +8,7 @@ const ON_ERC1155_BATCH_RECEIVED_SELECTOR: u32 = 0xbc197c81_u32;
 
 #[abi]
 trait IERC1155 {
-  fn uri(tokenId: u256) -> Array<felt252>;
+  fn uri(tokenId: u256) -> Span<felt252>;
 
   fn supports_interface(interface_id: u32) -> bool;
 
