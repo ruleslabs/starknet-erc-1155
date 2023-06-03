@@ -126,7 +126,7 @@ fn test_initialize() {
 }
 
 //
-// Getters
+// Balances
 //
 
 #[test]
@@ -169,6 +169,38 @@ fn test_balance_of_batch() {
     ERC1155::balance_of_batch(accounts: accounts.span(), ids: ids.span()).span() == amounts.span(),
     'Balances should be amounts'
   );
+}
+
+//
+// URI
+//
+
+#[test]
+#[available_gas(20000000)]
+fn test_set_uri() {
+  setup();
+
+  let mut new_URI = ArrayTrait::new();
+  new_URI.append('random');
+  new_URI.append(0);
+  new_URI.append('felt252');
+  new_URI.append(0);
+  new_URI.append('elements');
+  new_URI.append('.');
+  ERC1155::_set_URI(new_URI: new_URI.span());
+
+  assert(new_URI.span() == ERC1155::uri(0.into()), 'uri should be new_URI');
+}
+
+#[test]
+#[available_gas(20000000)]
+fn test_set_empty_uri() {
+  setup();
+
+  let empty_uri = ArrayTrait::new().span();
+  ERC1155::_set_URI(new_URI: empty_uri);
+
+  assert(empty_uri == ERC1155::uri(0.into()), 'uri should be empty');
 }
 
 //
