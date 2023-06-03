@@ -204,6 +204,27 @@ fn test_set_empty_uri() {
 }
 
 //
+// Approval
+//
+
+#[test]
+#[available_gas(20000000)]
+fn test_is_approved_for_all() {
+  let owner = setup();
+  let operator = OPERATOR();
+  let token_id = TOKEN_ID();
+
+  assert(!ERC1155::is_approved_for_all(owner, operator), 'Should not be approved');
+
+  testing::set_caller_address(owner);
+  ERC1155::set_approval_for_all(operator, true);
+
+  assert(ERC1155::is_approved_for_all(owner, operator), 'Should be approved');
+}
+
+// TODO: test_approve_from_operator
+
+//
 // Mint
 //
 
