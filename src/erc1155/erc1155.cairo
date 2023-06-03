@@ -18,6 +18,7 @@ mod ERC1155 {
   use rules_erc1155::utils::serde::SpanSerde;
   use rules_erc1155::introspection::erc165::ERC165;
   use rules_erc1155::erc1155;
+  use rules_erc1155::utils::storage::Felt252ArrayStorageAccess;
 
   // Dispatchers
   use super::super::interface::IERC1155ReceiverDispatcher;
@@ -30,7 +31,7 @@ mod ERC1155 {
   struct Storage {
     _balances: LegacyMap<(u256, starknet::ContractAddress), u256>,
     _operator_approvals: LegacyMap<(starknet::ContractAddress, starknet::ContractAddress), bool>,
-    _uri: LegacyMap<usize, felt252>,
+    _uri: Array<felt252>,
   }
 
   // Events //
@@ -39,20 +40,7 @@ mod ERC1155 {
 
   impl ERC1155 of erc1155::interface::IERC1155 {
     fn uri(tokenId: u256) -> Array<felt252> {
-      let mut ret = ArrayTrait::<felt252>::new();
-      let len: usize = _uri::read(0).try_into().unwrap();
-      let mut i: usize = 1;
-
-      loop {
-        if (i > len) {
-          break ();
-        }
-
-        ret.append(_uri::read(i));
-        i = i + 1;
-      };
-
-      ret
+      _uri::read()
     }
 
     fn supports_interface(interface_id: u32) -> bool {
@@ -117,7 +105,7 @@ mod ERC1155 {
 
   #[constructor]
   fn constructor(uri_: Array<felt252>) {
-    _set_URI(uri_.span());
+    _set_URI(uri_);
   }
 
   // Getters //
@@ -194,23 +182,8 @@ mod ERC1155 {
 
   // does not clean previous URI if previous len < new len
   #[internal]
-  fn _set_URI(mut new_URI: Span<felt252>) {
-    // store new len
-    _uri::write(0, new_URI.len().into());
-
-    let mut i: usize = 1;
-
-    loop {
-      match new_URI.pop_front() {
-        Option::Some(word) => {
-          _uri::write(i, *word);
-          i = i + 1;
-        },
-        Option::None(_) => {
-          break ();
-        },
-      };
-    };
+  fn _set_URI(new_URI: Array<felt252>) {
+      _uri::write(new_URI);
   }
 
   #[internal]
