@@ -1,2 +1,2 @@
 [crate_roots]
-erc1155 = "src"
+rules_erc1155 = "src"

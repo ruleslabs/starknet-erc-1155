@@ -3,7 +3,7 @@ name = "rules_erc1155"
 version = "0.1.0"
 
 [lib]
-name = "erc1155"
+name = "rules_erc1155"
 
 # See more keys and their definitions at https://docs.swmansion.com/scarb/docs/reference/manifest
 
