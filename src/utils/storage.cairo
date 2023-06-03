@@ -37,9 +37,9 @@ impl Felt252ArrayStorageAccess of StorageAccess<Array<felt252>> {
     let len: u8 = value.len().try_into().expect('Storage - Array too large');
 
     // Write array content
-    let mut i: u8 = 0;
+    let mut i: u8 = 1;
     loop {
-      if (i < 0) {
+      if (i > len) {
         break ();
       }
 
@@ -48,6 +48,7 @@ impl Felt252ArrayStorageAccess of StorageAccess<Array<felt252>> {
         address: storage_address_from_base_and_offset(base, i),
         value: *value.at(len.into())
       );
+      i += 1;
     };
 
     // Store array len

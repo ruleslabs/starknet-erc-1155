@@ -14,7 +14,7 @@ trait IERC1155 {
 
   fn balance_of(account: starknet::ContractAddress, id: u256) -> u256;
 
-  fn balance_of_batch(accounts: Span<starknet::ContractAddress>, ids: Span<u256>);
+  fn balance_of_batch(accounts: Span<starknet::ContractAddress>, ids: Span<u256>) -> Array<u256>;
 
   fn set_approval_for_all(operator: starknet::ContractAddress, approved: bool);
 
