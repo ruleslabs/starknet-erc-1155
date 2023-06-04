@@ -4,7 +4,6 @@ use traits::Into;
 use zeroable::Zeroable;
 use debug::{ PrintTrait, U32PrintImpl };
 use integer::u256_from_felt252;
-use rules_account::account::Account;
 
 use rules_erc1155::introspection::erc165;
 use rules_erc1155::erc1155;
@@ -12,6 +11,7 @@ use rules_erc1155::erc1155::ERC1155;
 use rules_erc1155::utils::partial_eq::SpanPartialEq;
 
 use rules_erc1155::tests::utils;
+use rules_erc1155::tests::mocks::account::Account;
 use rules_erc1155::tests::mocks::erc1155_receiver::{ ERC1155Receiver, ERC1155NonReceiver, SUCCESS, FAILURE };
 
 fn URI() -> Span<felt252> {
@@ -84,13 +84,7 @@ fn setup_receiver() -> starknet::ContractAddress {
 }
 
 fn setup_account() -> starknet::ContractAddress {
-  let mut calldata = ArrayTrait::new();
-  let public_key: felt252 = 1234678;
-
-  calldata.append(public_key);
-  calldata.append(0); // guardian pub key
-
-  utils::deploy(Account::TEST_CLASS_HASH, calldata)
+  utils::deploy(Account::TEST_CLASS_HASH, ArrayTrait::new())
 }
 
 //
@@ -287,18 +281,121 @@ fn test__set_approval_for_all_owner_equal_operator_false() {
 
 #[test]
 #[available_gas(20000000)]
-fn test_transfer_from_owner() {
-    let owner = setup();
-    let recipient = setup_receiver();
-    let token_id = TOKEN_ID();
-    let amount = AMOUNT();
+fn test_safe_transfer_from_to_receiver() {
+  let owner = setup();
+  let recipient = setup_receiver();
+  let token_id = TOKEN_ID();
+  let amount = AMOUNT();
 
-    assert_state_before_transfer(:owner, :recipient, :token_id, :amount);
+  assert_state_before_transfer(:owner, :recipient, :token_id, :amount);
 
-    testing::set_caller_address(owner);
-    ERC1155::safe_transfer_from(from: owner, to: recipient, id: token_id, :amount, data: DATA(true));
+  testing::set_caller_address(owner);
+  ERC1155::safe_transfer_from(from: owner, to: recipient, id: token_id, :amount, data: DATA(true));
 
-    assert_state_after_transfer(:owner, :recipient, :token_id, :amount);
+  assert_state_after_transfer(:owner, :recipient, :token_id, :amount);
+}
+
+#[test]
+#[available_gas(20000000)]
+fn test_safe_transfer_from_to_account() {
+  let owner = setup();
+  let account = setup_account();
+  let token_id = TOKEN_ID();
+  let amount = AMOUNT();
+
+  assert_state_before_transfer(:owner, recipient: account, :token_id, :amount);
+
+  testing::set_caller_address(owner);
+  ERC1155::safe_transfer_from(from: owner, to: account, id: token_id, :amount, data: DATA(true));
+
+  assert_state_after_transfer(:owner, recipient: account, :token_id, :amount);
+}
+
+#[test]
+#[available_gas(20000000)]
+#[should_panic(expected: ('ERC1155: safe transfer failed', ))]
+fn test_safe_transfer_from_to_receiver_failure() {
+  let owner = setup();
+  let recipient = setup_receiver();
+  let token_id = TOKEN_ID();
+  let amount = AMOUNT();
+
+  testing::set_caller_address(owner);
+  ERC1155::safe_transfer_from(from: owner, to: recipient, id: token_id, :amount, data: DATA(false));
+}
+
+#[test]
+#[available_gas(2000000)]
+#[should_panic(expected: ('ENTRYPOINT_NOT_FOUND', ))]
+fn test_safe_transfer_from_to_non_receiver() {
+  let owner = setup();
+  let recipient = utils::deploy(ERC1155NonReceiver::TEST_CLASS_HASH, ArrayTrait::new());
+  let token_id = TOKEN_ID();
+  let amount = AMOUNT();
+
+  testing::set_caller_address(owner);
+  ERC1155::safe_transfer_from(from: owner, to: recipient, id: token_id, :amount, data: DATA(true));
+}
+
+#[test]
+#[available_gas(20000000)]
+#[should_panic(expected: ('ERC1155: transfer from 0 addr', ))]
+fn test_safe_transfer_from_nonexistent() {
+  ERC1155::safe_transfer_from(from: ZERO(), to: RECIPIENT(), id: TOKEN_ID(), amount: 1.into(), data: DATA(true));
+}
+
+#[test]
+#[available_gas(20000000)]
+#[should_panic(expected: ('ERC1155: transfer to 0 addr', ))]
+fn test_safe_transfer_from_to_zero() {
+  let owner = setup();
+
+  testing::set_caller_address(owner);
+  ERC1155::safe_transfer_from(from: owner, to: ZERO(), id: TOKEN_ID(), amount: AMOUNT(), data: DATA(true));
+}
+
+#[test]
+#[available_gas(20000000)]
+fn test_safe_transfer_from_to_owner() {
+  let owner = setup();
+  let token_id = TOKEN_ID();
+  let amount = AMOUNT();
+
+  assert(ERC1155::balance_of(account: owner, id: token_id) == amount, 'Balance of owner before');
+
+  testing::set_caller_address(owner);
+  ERC1155::safe_transfer_from(from: owner, to: owner, id: token_id, :amount, data: DATA(true));
+
+  assert(ERC1155::balance_of(account: owner, id: token_id) == amount, 'Balance of owner after');
+}
+
+#[test]
+#[available_gas(20000000)]
+fn test_safe_transfer_from_approved_for_all() {
+  let owner = setup();
+  let recipient = setup_receiver();
+  let token_id = TOKEN_ID();
+  let amount = AMOUNT();
+
+  assert_state_before_transfer(:owner, :recipient, :token_id, :amount);
+
+  testing::set_caller_address(owner);
+  ERC1155::set_approval_for_all(OPERATOR(), true);
+
+  testing::set_caller_address(OPERATOR());
+  ERC1155::safe_transfer_from(from: owner, to: recipient, id: token_id, :amount, data: DATA(true));
+
+  assert_state_after_transfer(:owner, :recipient, :token_id, :amount);
+}
+
+#[test]
+#[available_gas(2000000)]
+#[should_panic(expected: ('ERC1155: caller not allowed', ))]
+fn test_safe_transfer_from_unauthorized() {
+  let owner = setup();
+
+  testing::set_caller_address(OTHER());
+  ERC1155::safe_transfer_from(from: owner, to: RECIPIENT(), id: TOKEN_ID(), amount: AMOUNT(), data: DATA(true));
 }
 
 //
