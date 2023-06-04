@@ -418,7 +418,7 @@ mod ERC1155 {
       let ERC1155Receiver = IERC1155ReceiverDispatcher { contract_address: to };
 
       let response = ERC1155Receiver.on_erc1155_batch_received(:operator, :from, :ids, values: amounts, :data);
-      assert(response == erc1155::interface::ON_ERC1155_RECEIVED_SELECTOR, 'ERC1155: safe transfer failed');
+      assert(response == erc1155::interface::ON_ERC1155_BATCH_RECEIVED_SELECTOR, 'ERC1155: safe transfer failed');
     } else {
       assert(
         ERC165.supports_interface(account::interface::IACCOUNT_ID) == true,
