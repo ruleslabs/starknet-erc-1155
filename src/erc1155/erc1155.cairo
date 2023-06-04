@@ -253,16 +253,16 @@ mod ERC1155 {
   // Burn
 
   #[internal]
-  fn _burn(from: starknet::ContractAddress, id: u256, amount: u256, data: Span<felt252>) {
+  fn _burn(from: starknet::ContractAddress, id: u256, amount: u256) {
     assert(from.is_non_zero(), 'ERC1155: burn from 0 addr');
     let (ids, amounts) = _as_singleton_spans(id, amount);
-    _update(:from, to: Zeroable::zero(), :ids, :amounts, :data);
+    _update(:from, to: Zeroable::zero(), :ids, :amounts, data: ArrayTrait::new().span());
   }
 
   #[internal]
-  fn _burn_batch(from: starknet::ContractAddress, ids: Span<u256>, amounts: Span<u256>, data: Span<felt252>) {
+  fn _burn_batch(from: starknet::ContractAddress, ids: Span<u256>, amounts: Span<u256>) {
     assert(from.is_non_zero(), 'ERC1155: burn from 0 addr');
-    _update(:from, to: Zeroable::zero(), :ids, :amounts, :data);
+    _update(:from, to: Zeroable::zero(), :ids, :amounts, data: ArrayTrait::new().span());
   }
 
   // Setters
@@ -316,7 +316,7 @@ mod ERC1155 {
 
       // Increase recipient balance
       if (to.is_non_zero()) {
-        let to_balance = _balances::read((id, from));
+        let to_balance = _balances::read((id, to));
         _balances::write((id, to), to_balance + amount);
       }
 
