@@ -21,10 +21,8 @@ mod ERC1155 {
   use rules_erc1155::utils::storage::Felt252SpanStorageAccess;
 
   // Dispatchers
-  use super::super::interface::IERC1155ReceiverDispatcher;
-  use super::super::interface::IERC1155ReceiverDispatcherTrait;
-  use rules_erc1155::introspection::erc165::IERC165Dispatcher;
-  use rules_erc1155::introspection::erc165::IERC165DispatcherTrait;
+  use super::super::interface::{ IERC1155ReceiverDispatcher, IERC1155ReceiverDispatcherTrait };
+  use rules_erc1155::introspection::erc165::{ IERC165Dispatcher, IERC165DispatcherTrait };
 
   //
   // Storage
