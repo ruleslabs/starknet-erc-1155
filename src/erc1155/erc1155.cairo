@@ -1,8 +1,40 @@
 #[abi]
 trait ERC1155ABI {
-  fn uri(tokenId: u256) -> Array<felt252>;
+  #[view]
+  fn uri(tokenId: u256) -> Span<felt252>;
 
+  #[view]
   fn supports_interface(interface_id: u32) -> bool;
+
+  #[view]
+  fn balance_of(account: starknet::ContractAddress, id: u256) -> u256;
+
+  #[view]
+  fn balance_of_batch(accounts: Span<starknet::ContractAddress>, ids: Span<u256>) -> Array<u256>;
+
+  #[external]
+  fn set_approval_for_all(operator: starknet::ContractAddress, approved: bool);
+
+  #[view]
+  fn is_approved_for_all(account: starknet::ContractAddress, operator: starknet::ContractAddress) -> bool;
+
+  #[external]
+  fn safe_transfer_from(
+    from: starknet::ContractAddress,
+    to: starknet::ContractAddress,
+    id: u256,
+    amount: u256,
+    data: Span<felt252>
+  );
+
+  #[external]
+  fn safe_batch_transfer_from(
+    from: starknet::ContractAddress,
+    to: starknet::ContractAddress,
+    ids: Span<u256>,
+    amounts: Span<u256>,
+    data: Span<felt252>
+  );
 }
 
 #[contract]
