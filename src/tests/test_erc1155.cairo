@@ -2,17 +2,16 @@ use starknet::testing;
 use array::{ ArrayTrait, SpanTrait };
 use traits::Into;
 use zeroable::Zeroable;
-use debug::{ PrintTrait, U32PrintImpl };
 use integer::u256_from_felt252;
 
+// locals
 use rules_erc1155::introspection::erc165;
 use rules_erc1155::erc1155;
 use rules_erc1155::erc1155::ERC1155;
-use rules_erc1155::utils::partial_eq::SpanPartialEq;
-
-use rules_erc1155::tests::utils;
-use rules_erc1155::tests::mocks::account::Account;
-use rules_erc1155::tests::mocks::erc1155_receiver::{ ERC1155Receiver, ERC1155NonReceiver, SUCCESS, FAILURE };
+use super::utils;
+use super::utils::partial_eq::SpanPartialEq;
+use super::mocks::account::Account;
+use super::mocks::erc1155_receiver::{ ERC1155Receiver, ERC1155NonReceiver, SUCCESS, FAILURE };
 
 fn URI() -> Span<felt252> {
   let mut uri = ArrayTrait::new();
