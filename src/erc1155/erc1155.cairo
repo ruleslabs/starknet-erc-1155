@@ -424,10 +424,7 @@ mod ERC1155 {
       let response = ERC1155Receiver.on_erc1155_received(:operator, :from, :id, value: amount, :data);
       assert(response == erc1155::interface::ON_ERC1155_RECEIVED_SELECTOR, 'ERC1155: safe transfer failed');
     } else {
-      assert(
-        ERC165.supports_interface(account::interface::IACCOUNT_ID) == true,
-        'ERC1155: safe transfer failed'
-      );
+      assert(ERC165.supports_interface(account::interface::IACCOUNT_ID), 'ERC1155: safe transfer failed');
     }
   }
 
@@ -450,10 +447,7 @@ mod ERC1155 {
       let response = ERC1155Receiver.on_erc1155_batch_received(:operator, :from, :ids, values: amounts, :data);
       assert(response == erc1155::interface::ON_ERC1155_BATCH_RECEIVED_SELECTOR, 'ERC1155: safe transfer failed');
     } else {
-      assert(
-        ERC165.supports_interface(account::interface::IACCOUNT_ID) == true,
-        'ERC1155: safe transfer failed'
-      );
+      assert(ERC165.supports_interface(account::interface::IACCOUNT_ID), 'ERC1155: safe transfer failed');
     }
   }
 

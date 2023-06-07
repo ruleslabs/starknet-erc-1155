@@ -42,7 +42,7 @@ impl Felt252SpanStorageAccess of StorageAccess<Span<felt252>> {
   fn write(address_domain: u32, base: StorageBaseAddress, mut value: Span<felt252>) -> SyscallResult<()> {
     // Assert span can fit in storage obj
     // 1 slots for the len; 255 slots for the span content
-    let len: u8 = value.len().try_into().expect('Storage - Span too large');
+    let len: u8 = Into::<u32, felt252>::into(value.len()).try_into().expect('Storage - Span too large');
 
     // Write span content
     let mut i: u8 = 1;
