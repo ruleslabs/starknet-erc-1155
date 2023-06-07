@@ -12,3 +12,8 @@ rules_account = { git = "https://github.com/ruleslabs/starknet-rules-account.git
 starknet = ">=1.0.0"
 
 [[target.starknet-contract]]
+# Enable Sierra codegen.
+sierra = true
+
+# Enable CASM codegen.
+casm = true

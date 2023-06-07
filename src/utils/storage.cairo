@@ -15,7 +15,9 @@ impl Felt252SpanStorageAccess of StorageAccess<Span<felt252>> {
     let mut arr = ArrayTrait::new();
 
     // Read span len
-    let len: u8 = StorageAccess::<usize>::read(:address_domain, :base)?.try_into().expect('Storage - Span too large');
+    let len: u8 = storage_read_syscall(:address_domain, address: storage_address_from_base_and_offset(base, 0_u8))?
+      .try_into()
+      .expect('Storage - Span too large');
 
     // Load span content
     let mut i: u8 = 1;
