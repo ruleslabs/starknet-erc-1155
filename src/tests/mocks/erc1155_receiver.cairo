@@ -11,7 +11,7 @@ mod ERC1155Receiver {
   use rules_erc1155::erc1155::interface::ON_ERC1155_RECEIVED_SELECTOR;
   use rules_erc1155::erc1155::interface::ON_ERC1155_BATCH_RECEIVED_SELECTOR;
   use rules_erc1155::introspection::erc165::ERC165;
-  use rules_erc1155::utils::serde::SpanSerde;
+  use rules_utils::utils::serde::SpanSerde;
 
   impl ERC1155ReceiverImpl of IERC1155Receiver {
     fn on_erc1155_received(

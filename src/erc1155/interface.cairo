@@ -1,4 +1,4 @@
-use rules_erc1155::utils::serde::SpanSerde;
+use rules_utils::utils::serde::SpanSerde;
 
 const IERC1155_ID: u32 = 0xd9b67a26_u32;
 const IERC1155_METADATA_ID: u32 = 0x0e89341c_u32;

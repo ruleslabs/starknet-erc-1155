@@ -9,7 +9,7 @@ use rules_erc1155::introspection::erc165;
 use rules_erc1155::erc1155;
 use rules_erc1155::erc1155::ERC1155;
 use super::utils;
-use super::utils::partial_eq::SpanPartialEq;
+use rules_utils::utils::partial_eq::SpanPartialEq;
 use super::mocks::account::Account;
 use super::mocks::erc1155_receiver::{ ERC1155Receiver, ERC1155NonReceiver, SUCCESS, FAILURE };
 

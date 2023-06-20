@@ -47,10 +47,10 @@ mod ERC1155 {
   use rules_account::account;
 
   // local
-  use rules_erc1155::utils::serde::SpanSerde;
+  use rules_utils::utils::serde::SpanSerde;
   use rules_erc1155::introspection::erc165::ERC165;
   use rules_erc1155::erc1155;
-  use rules_erc1155::utils::storage::Felt252SpanStorageAccess;
+  use rules_utils::utils::storage::Felt252SpanStorageAccess;
 
   // Dispatchers
   use super::super::interface::{ IERC1155ReceiverDispatcher, IERC1155ReceiverDispatcherTrait };

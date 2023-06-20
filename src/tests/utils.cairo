@@ -1,5 +1,3 @@
-mod partial_eq;
-
 use array::ArrayTrait;
 use core::result::ResultTrait;
 use option::OptionTrait;
