@@ -123,7 +123,7 @@ mod ERC1155 {
   //
 
   #[external(v0)]
-  impl ERC1155Impl of erc1155::interface::IERC1155<ContractState> {
+  impl IERC1155Impl of erc1155::interface::IERC1155<ContractState> {
     fn uri(self: @ContractState, tokenId: u256) -> Span<felt252> {
       self._uri.read()
     }
