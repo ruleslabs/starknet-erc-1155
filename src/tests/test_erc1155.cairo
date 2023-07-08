@@ -1,3 +1,4 @@
+use rules_erc1155::introspection::erc165::IERC165;
 use core::serde::Serde;
 use clone::Clone;
 use starknet::testing;
@@ -165,15 +166,15 @@ fn setup_account() -> starknet::ContractAddress {
 fn test_constructor() {
   let mut erc1155 = setup_dispatcher(URI());
 
-  // assert(erc1155.uri(TOKEN_ID()) == URI(), 'uri should be URI()');
+  assert(erc1155.uri(TOKEN_ID()) == URI(), 'uri should be URI()');
 
-  // assert(erc1155.balance_of(RECIPIENT(), TOKEN_ID()) == 0.into(), 'Balance should be zero');
+  assert(erc1155.balance_of(RECIPIENT(), TOKEN_ID()) == 0.into(), 'Balance should be zero');
 
-  // assert(erc1155.supports_interface(erc1155::interface::IERC1155_ID), 'Missing interface ID');
-  // assert(erc1155.supports_interface(erc1155::interface::IERC1155_METADATA_ID), 'missing interface ID');
-  // assert(erc1155.supports_interface(erc165::IERC165_ID), 'missing interface ID');
+  assert(erc1155.supports_interface(erc1155::interface::IERC1155_ID), 'Missing interface ID');
+  assert(erc1155.supports_interface(erc1155::interface::IERC1155_METADATA_ID), 'missing interface ID');
+  assert(erc1155.supports_interface(erc165::IERC165_ID), 'missing interface ID');
 
-  // assert(!erc1155.supports_interface(erc165::INVALID_ID), 'invalid interface ID');
+  assert(!erc1155.supports_interface(erc165::INVALID_ID), 'invalid interface ID');
 }
 
 #[test]

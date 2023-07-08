@@ -8,9 +8,7 @@ const ON_ERC1155_BATCH_RECEIVED_SELECTOR: u32 = 0xbc197c81_u32;
 
 #[starknet::interface]
 trait IERC1155<TContractState> {
-  fn uri(self: @TContractState, tokenId: u256) -> Span<felt252>;
-
-  fn supports_interface(self: @TContractState, interface_id: u32) -> bool;
+  fn uri(self: @TContractState, token_id: u256) -> Span<felt252>;
 
   fn balance_of(self: @TContractState, account: starknet::ContractAddress, id: u256) -> u256;
 

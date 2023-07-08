@@ -45,6 +45,7 @@ mod ERC1155 {
   use rules_account::account;
 
   // local
+  use rules_erc1155::introspection::erc165;
   use rules_erc1155::introspection::erc165::ERC165;
   use rules_erc1155::erc1155;
   use rules_erc1155::erc1155::interface::IERC1155;
@@ -124,19 +125,8 @@ mod ERC1155 {
 
   #[external(v0)]
   impl IERC1155Impl of erc1155::interface::IERC1155<ContractState> {
-    fn uri(self: @ContractState, tokenId: u256) -> Span<felt252> {
+    fn uri(self: @ContractState, token_id: u256) -> Span<felt252> {
       self._uri.read()
-    }
-
-    fn supports_interface(self: @ContractState, interface_id: u32) -> bool {
-      if (
-        (interface_id == erc1155::interface::IERC1155_ID) |
-        (interface_id == erc1155::interface::IERC1155_METADATA_ID)
-      ) {
-        true
-      } else {
-        ERC165::ERC165Impl::supports_interface(self: @ERC165::unsafe_new_contract_state(), :interface_id)
-      }
     }
 
     fn balance_of(self: @ContractState, account: starknet::ContractAddress, id: u256) -> u256 {
@@ -212,6 +202,26 @@ mod ERC1155 {
       );
 
       self._safe_batch_transfer_from(:from, :to, :ids, :amounts, :data);
+    }
+  }
+
+  //
+  // ERC165
+  //
+
+  #[external(v0)]
+  impl IERC165Impl of erc165::IERC165<ContractState> {
+    fn supports_interface(self: @ContractState, interface_id: u32) -> bool {
+      let erc165_self = ERC165::unsafe_new_contract_state();
+
+      if (
+        (interface_id == erc1155::interface::IERC1155_ID) |
+        (interface_id == erc1155::interface::IERC1155_METADATA_ID)
+      ) {
+        true
+      } else {
+        ERC165::ERC165Impl::supports_interface(self: @erc165_self, :interface_id)
+      }
     }
   }
 

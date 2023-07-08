@@ -2,8 +2,8 @@ const IERC165_ID: u32 = 0x01ffc9a7_u32;
 const INVALID_ID: u32 = 0xffffffff_u32;
 
 #[starknet::interface]
-trait IERC165<T> {
-  fn supports_interface(self: @T, interface_id: u32) -> bool;
+trait IERC165<TContractState> {
+  fn supports_interface(self: @TContractState, interface_id: u32) -> bool;
 }
 
 #[starknet::contract]
