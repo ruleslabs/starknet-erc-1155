@@ -1,43 +1,53 @@
-const IERC165_ID: u32 = 0x01ffc9a7;
-const INVALID_ID: u32 = 0xffffffff;
+const IERC165_ID: u32 = 0x01ffc9a7_u32;
+const INVALID_ID: u32 = 0xffffffff_u32;
 
-#[abi]
-trait IERC165 {
-  fn supports_interface(interface_id: u32) -> bool;
+#[starknet::interface]
+trait IERC165<T> {
+  fn supports_interface(self: @T, interface_id: u32) -> bool;
 }
 
-#[contract]
+#[starknet::contract]
 mod ERC165 {
-  use rules_erc1155::introspection::erc165;
+  // locals
+  use rules_account::introspection::erc165;
 
+  //
+  // Storage
+  //
+
+  #[storage]
   struct Storage {
     supported_interfaces: LegacyMap<u32, bool>
   }
 
-  impl ERC165 of erc165::IERC165 {
-    fn supports_interface(interface_id: u32) -> bool {
+  //
+  // ERC165 impl
+  //
+
+  #[external(v0)]
+  impl ERC165Impl of erc165::IERC165<ContractState> {
+    fn supports_interface(self: @ContractState, interface_id: u32) -> bool {
       if interface_id == erc165::IERC165_ID {
         return true;
       }
-
-      supported_interfaces::read(interface_id)
+      self.supported_interfaces.read(interface_id)
     }
   }
 
-  #[view]
-  fn supports_interface(interface_id: u32) -> bool {
-    ERC165::supports_interface(interface_id)
-  }
+  //
+  // Internal
+  //
 
-  #[internal]
-  fn register_interface(interface_id: u32) {
-    assert(interface_id != erc165::INVALID_ID, 'Invalid id');
-    supported_interfaces::write(interface_id, true);
-  }
+  #[generate_trait]
+  impl HelperImpl of HelperTrait {
+    fn register_interface(ref self: ContractState, interface_id: u32) {
+      assert(interface_id != erc165::INVALID_ID, 'Invalid id');
+      self.supported_interfaces.write(interface_id, true);
+    }
 
-  #[internal]
-  fn deregister_interface(interface_id: u32) {
-    assert(interface_id != erc165::IERC165_ID, 'Invalid id');
-    supported_interfaces::write(interface_id, false);
+    fn deregister_interface(ref self: ContractState, interface_id: u32) {
+      assert(interface_id != erc165::IERC165_ID, 'Invalid id');
+      self.supported_interfaces.write(interface_id, false);
+    }
   }
 }

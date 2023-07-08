@@ -1,9 +1,9 @@
 const SUCCESS: felt252 = 'SUCCESS';
 const FAILURE: felt252 = 'FAILURE';
 
-#[contract]
+#[starknet::contract]
 mod ERC1155Receiver {
-  use array::SpanTrait;
+  use array::{ SpanTrait, SpanSerde };
 
   // locals
   use rules_erc1155::erc1155::interface::IERC1155Receiver;
@@ -11,10 +11,32 @@ mod ERC1155Receiver {
   use rules_erc1155::erc1155::interface::ON_ERC1155_RECEIVED_SELECTOR;
   use rules_erc1155::erc1155::interface::ON_ERC1155_BATCH_RECEIVED_SELECTOR;
   use rules_erc1155::introspection::erc165::ERC165;
-  use rules_utils::utils::serde::SpanSerde;
 
-  impl ERC1155ReceiverImpl of IERC1155Receiver {
+  //
+  // Storage
+  //
+
+  #[storage]
+  struct Storage { }
+
+  //
+  // Constructor
+  //
+
+  #[constructor]
+  fn constructor(ref self: ContractState) {
+    let mut erc165_self = ERC165::unsafe_new_contract_state();
+    ERC165::HelperImpl::register_interface(ref self: erc165_self, interface_id: IERC1155_RECEIVER_ID);
+  }
+
+  //
+  // ERC1155 Receiver impl
+  //
+
+  #[external(v0)]
+  impl ERC1155ReceiverImpl of IERC1155Receiver<ContractState> {
     fn on_erc1155_received(
+      ref self: ContractState,
       operator: starknet::ContractAddress,
       from: starknet::ContractAddress,
       id: u256,
@@ -29,6 +51,7 @@ mod ERC1155Receiver {
     }
 
     fn on_erc1155_batch_received(
+      ref self: ContractState,
       operator: starknet::ContractAddress,
       from: starknet::ContractAddress,
       ids: Span<u256>,
@@ -43,38 +66,17 @@ mod ERC1155Receiver {
     }
   }
 
-  #[constructor]
-  fn constructor() {
-    ERC165::register_interface(IERC1155_RECEIVER_ID);
-  }
-
-  #[view]
-  fn supports_interface(interface_id: u32) -> bool {
-    ERC165::supports_interface(interface_id)
-  }
-
-  #[external]
-  fn on_erc1155_received(
-    operator: starknet::ContractAddress,
-    from: starknet::ContractAddress,
-    id: u256,
-    value: u256,
-    data: Span<felt252>
-  ) -> u32 {
-    ERC1155ReceiverImpl::on_erc1155_received(:operator, :from, :id, :value, :data)
-  }
-
-  #[external]
-  fn on_erc1155_batch_received(
-    operator: starknet::ContractAddress,
-    from: starknet::ContractAddress,
-    ids: Span<u256>,
-    values: Span<u256>,
-    data: Span<felt252>
-  ) -> u32 {
-    ERC1155ReceiverImpl::on_erc1155_batch_received(:operator, :from, :ids, :values, :data)
+  #[external(v0)]
+  fn supports_interface(self: @ContractState, interface_id: u32) -> bool {
+    ERC165::ERC165Impl::supports_interface(self: @ERC165::unsafe_new_contract_state(), :interface_id)
   }
 }
 
-#[contract]
-mod ERC1155NonReceiver {}
+#[starknet::contract]
+mod ERC1155NonReceiver {
+  #[storage]
+  struct Storage { }
+
+  #[constructor]
+  fn constructor(ref self: ContractState) {}
+}
