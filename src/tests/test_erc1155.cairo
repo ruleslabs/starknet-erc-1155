@@ -1,4 +1,3 @@
-use rules_erc1155::introspection::erc165::IERC165;
 use core::serde::Serde;
 use clone::Clone;
 use starknet::testing;
@@ -8,16 +7,16 @@ use zeroable::Zeroable;
 use integer::u256_from_felt252;
 
 // locals
+use rules_erc1155::introspection::erc165::IERC165;
 use rules_erc1155::introspection::erc165;
 use rules_erc1155::erc1155;
 use rules_erc1155::erc1155::{ ERC1155, ERC1155ABIDispatcher, ERC1155ABIDispatcherTrait };
 use rules_erc1155::erc1155::interface::IERC1155;
-use rules_erc1155::erc1155::ERC1155::HelperTrait;
 use super::utils;
 use rules_utils::utils::partial_eq::SpanPartialEq;
 use super::mocks::account::Account;
 use super::mocks::erc1155_receiver::{ ERC1155Receiver, ERC1155NonReceiver, SUCCESS, FAILURE };
-use rules_erc1155::erc1155::erc1155::ERC1155::ContractState as ERC1155ContractState;
+use rules_erc1155::erc1155::erc1155::ERC1155::{ ContractState as ERC1155ContractState, HelperTrait };
 
 fn URI() -> Span<felt252> {
   let mut uri = ArrayTrait::new();

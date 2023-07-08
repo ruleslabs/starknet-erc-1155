@@ -120,7 +120,7 @@ mod ERC1155 {
   }
 
   //
-  // ERC1155 impl
+  // IERC1155 impl
   //
 
   #[external(v0)]
@@ -206,7 +206,7 @@ mod ERC1155 {
   }
 
   //
-  // ERC165
+  // IERC165 impl
   //
 
   #[external(v0)]
