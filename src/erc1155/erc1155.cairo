@@ -218,7 +218,7 @@ mod ERC1155 {
       ) {
         true
       } else {
-        let mut erc165_self = ERC165::unsafe_new_contract_state();
+        let erc165_self = ERC165::unsafe_new_contract_state();
 
         erc165_self.supports_interface(:interface_id)
         // ERC165::ERC165Impl::supports_interface(self: @erc165_self, :interface_id)

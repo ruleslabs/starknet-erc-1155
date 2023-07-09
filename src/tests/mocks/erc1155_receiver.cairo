@@ -71,7 +71,7 @@ mod ERC1155Receiver {
 
   #[external(v0)]
   fn supports_interface(self: @ContractState, interface_id: u32) -> bool {
-    let mut erc165_self = ERC165::unsafe_new_contract_state();
+    let erc165_self = ERC165::unsafe_new_contract_state();
 
     erc165_self.supports_interface(:interface_id)
   }
