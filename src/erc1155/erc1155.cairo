@@ -46,13 +46,13 @@ mod ERC1155 {
 
   // local
   use rules_erc1155::introspection::erc165;
-  use rules_erc1155::introspection::erc165::ERC165;
+  use rules_erc1155::introspection::erc165::{ ERC165, IERC165 };
   use rules_erc1155::erc1155;
   use rules_erc1155::erc1155::interface::IERC1155;
   use rules_utils::utils::storage::Felt252SpanStorageAccess;
 
   // Dispatchers
-  use super::super::interface::{ IERC1155ReceiverDispatcher, IERC1155ReceiverDispatcherTrait };
+  use rules_erc1155::erc1155::interface::{ IERC1155ReceiverDispatcher, IERC1155ReceiverDispatcherTrait };
   use rules_erc1155::introspection::erc165::{ IERC165Dispatcher, IERC165DispatcherTrait };
 
   //
@@ -212,15 +212,16 @@ mod ERC1155 {
   #[external(v0)]
   impl IERC165Impl of erc165::IERC165<ContractState> {
     fn supports_interface(self: @ContractState, interface_id: u32) -> bool {
-      let erc165_self = ERC165::unsafe_new_contract_state();
-
       if (
         (interface_id == erc1155::interface::IERC1155_ID) |
         (interface_id == erc1155::interface::IERC1155_METADATA_ID)
       ) {
         true
       } else {
-        ERC165::ERC165Impl::supports_interface(self: @erc165_self, :interface_id)
+        let mut erc165_self = ERC165::unsafe_new_contract_state();
+
+        erc165_self.supports_interface(:interface_id)
+        // ERC165::ERC165Impl::supports_interface(self: @erc165_self, :interface_id)
       }
     }
   }

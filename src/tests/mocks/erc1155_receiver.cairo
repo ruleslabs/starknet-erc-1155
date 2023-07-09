@@ -1,3 +1,4 @@
+use rules_account::introspection::erc165::IERC165;
 const SUCCESS: felt252 = 'SUCCESS';
 const FAILURE: felt252 = 'FAILURE';
 
@@ -10,7 +11,8 @@ mod ERC1155Receiver {
   use rules_erc1155::erc1155::interface::IERC1155_RECEIVER_ID;
   use rules_erc1155::erc1155::interface::ON_ERC1155_RECEIVED_SELECTOR;
   use rules_erc1155::erc1155::interface::ON_ERC1155_BATCH_RECEIVED_SELECTOR;
-  use rules_erc1155::introspection::erc165::ERC165;
+  use rules_erc1155::introspection::erc165::{ ERC165, IERC165 };
+  use rules_erc1155::introspection::erc165::ERC165::HelperTrait;
 
   //
   // Storage
@@ -26,7 +28,8 @@ mod ERC1155Receiver {
   #[constructor]
   fn constructor(ref self: ContractState) {
     let mut erc165_self = ERC165::unsafe_new_contract_state();
-    ERC165::HelperImpl::register_interface(ref self: erc165_self, interface_id: IERC1155_RECEIVER_ID);
+
+    erc165_self._register_interface(interface_id: IERC1155_RECEIVER_ID);
   }
 
   //
@@ -68,7 +71,9 @@ mod ERC1155Receiver {
 
   #[external(v0)]
   fn supports_interface(self: @ContractState, interface_id: u32) -> bool {
-    ERC165::ERC165Impl::supports_interface(self: @ERC165::unsafe_new_contract_state(), :interface_id)
+    let mut erc165_self = ERC165::unsafe_new_contract_state();
+
+    erc165_self.supports_interface(:interface_id)
   }
 }
 
