@@ -1,6 +1,6 @@
 #[starknet::interface]
 trait ERC1155ABI<TContractState> {
-  fn uri(self: @TContractState, tokenId: u256) -> Span<felt252>;
+  fn uri(self: @TContractState, token_id: u256) -> Span<felt252>;
 
   fn supports_interface(self: @TContractState, interface_id: u32) -> bool;
 
@@ -221,7 +221,6 @@ mod ERC1155 {
         let erc165_self = ERC165::unsafe_new_contract_state();
 
         erc165_self.supports_interface(:interface_id)
-        // ERC165::ERC165Impl::supports_interface(self: @erc165_self, :interface_id)
       }
     }
   }
