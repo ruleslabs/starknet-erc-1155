@@ -5,10 +5,10 @@ use array::{ ArrayTrait, SpanTrait, SpanCopy, SpanSerde };
 use traits::Into;
 use zeroable::Zeroable;
 use integer::u256_from_felt252;
-
-// locals
 use rules_utils::introspection::erc165::IERC165;
 use rules_utils::introspection::erc165;
+
+// locals
 use rules_erc1155::erc1155;
 use rules_erc1155::erc1155::{ ERC1155, ERC1155ABIDispatcher, ERC1155ABIDispatcherTrait };
 use rules_erc1155::erc1155::interface::IERC1155;

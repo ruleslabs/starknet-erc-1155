@@ -4,14 +4,14 @@ const FAILURE: felt252 = 'FAILURE';
 #[starknet::contract]
 mod ERC1155Receiver {
   use array::{ SpanTrait, SpanSerde };
+  use rules_utils::introspection::erc165::{ ERC165, IERC165 };
+  use rules_utils::introspection::erc165::ERC165::HelperTrait;
 
   // locals
   use rules_erc1155::erc1155::interface::IERC1155Receiver;
   use rules_erc1155::erc1155::interface::IERC1155_RECEIVER_ID;
   use rules_erc1155::erc1155::interface::ON_ERC1155_RECEIVED_SELECTOR;
   use rules_erc1155::erc1155::interface::ON_ERC1155_BATCH_RECEIVED_SELECTOR;
-  use rules_utils::introspection::erc165::{ ERC165, IERC165 };
-  use rules_utils::introspection::erc165::ERC165::HelperTrait;
 
   //
   // Storage

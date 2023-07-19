@@ -43,17 +43,19 @@ mod ERC1155 {
   use zeroable::Zeroable;
   use starknet::contract_address::ContractAddressZeroable;
   use rules_account::account;
-
-  // local
   use rules_utils::introspection::erc165;
   use rules_utils::introspection::erc165::{ ERC165, IERC165 };
+
+  // Dispatchers
+  use rules_utils::introspection::erc165::{ IERC165Dispatcher, IERC165DispatcherTrait };
+
+  // local
   use rules_erc1155::erc1155;
   use rules_erc1155::erc1155::interface::IERC1155;
   use rules_utils::utils::storage::Felt252SpanStorageAccess;
 
   // Dispatchers
   use rules_erc1155::erc1155::interface::{ IERC1155ReceiverDispatcher, IERC1155ReceiverDispatcherTrait };
-  use rules_utils::introspection::erc165::{ IERC165Dispatcher, IERC165DispatcherTrait };
 
   //
   // Storage
