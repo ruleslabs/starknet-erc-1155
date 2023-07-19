@@ -1,4 +1,3 @@
-use rules_account::introspection::erc165::IERC165;
 const SUCCESS: felt252 = 'SUCCESS';
 const FAILURE: felt252 = 'FAILURE';
 
@@ -11,8 +10,8 @@ mod ERC1155Receiver {
   use rules_erc1155::erc1155::interface::IERC1155_RECEIVER_ID;
   use rules_erc1155::erc1155::interface::ON_ERC1155_RECEIVED_SELECTOR;
   use rules_erc1155::erc1155::interface::ON_ERC1155_BATCH_RECEIVED_SELECTOR;
-  use rules_erc1155::introspection::erc165::{ ERC165, IERC165 };
-  use rules_erc1155::introspection::erc165::ERC165::HelperTrait;
+  use rules_utils::introspection::erc165::{ ERC165, IERC165 };
+  use rules_utils::introspection::erc165::ERC165::HelperTrait;
 
   //
   // Storage

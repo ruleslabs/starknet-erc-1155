@@ -1,4 +1,4 @@
-use core::serde::Serde;
+use serde::Serde;
 use clone::Clone;
 use starknet::testing;
 use array::{ ArrayTrait, SpanTrait, SpanCopy, SpanSerde };
@@ -7,8 +7,8 @@ use zeroable::Zeroable;
 use integer::u256_from_felt252;
 
 // locals
-use rules_erc1155::introspection::erc165::IERC165;
-use rules_erc1155::introspection::erc165;
+use rules_utils::introspection::erc165::IERC165;
+use rules_utils::introspection::erc165;
 use rules_erc1155::erc1155;
 use rules_erc1155::erc1155::{ ERC1155, ERC1155ABIDispatcher, ERC1155ABIDispatcherTrait };
 use rules_erc1155::erc1155::interface::IERC1155;
