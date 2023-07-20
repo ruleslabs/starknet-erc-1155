@@ -40,6 +40,8 @@ trait IERC1155<TContractState> {
   );
 }
 
+// ERC1155 Receiver
+
 #[starknet::interface]
 trait IERC1155Receiver<TContractState> {
   fn on_erc1155_received(
@@ -52,6 +54,27 @@ trait IERC1155Receiver<TContractState> {
   ) -> u32;
 
   fn on_erc1155_batch_received(
+    ref self: TContractState,
+    operator: starknet::ContractAddress,
+    from: starknet::ContractAddress,
+    ids: Span<u256>,
+    values: Span<u256>,
+    data: Span<felt252>
+  ) -> u32;
+}
+
+#[starknet::interface]
+trait IERC1155ReceiverCamel<TContractState> {
+  fn onERC1155Received(
+    ref self: TContractState,
+    operator: starknet::ContractAddress,
+    from: starknet::ContractAddress,
+    id: u256,
+    value: u256,
+    data: Span<felt252>
+  ) -> u32;
+
+  fn onERC1155BatchReceived(
     ref self: TContractState,
     operator: starknet::ContractAddress,
     from: starknet::ContractAddress,

@@ -47,7 +47,7 @@ mod ERC1155 {
   use rules_utils::introspection::erc165::{ ERC165, IERC165 };
 
   // Dispatchers
-  use rules_utils::introspection::erc165::{ IERC165Dispatcher, IERC165DispatcherTrait };
+  use rules_utils::introspection::dual_erc165::{ DualCaseERC165, DualCaseERC165Trait };
 
   // local
   use rules_erc1155::erc1155;
@@ -55,7 +55,7 @@ mod ERC1155 {
   use rules_utils::utils::storage::Felt252SpanStorageAccess;
 
   // Dispatchers
-  use rules_erc1155::erc1155::interface::{ IERC1155ReceiverDispatcher, IERC1155ReceiverDispatcherTrait };
+  use rules_erc1155::erc1155::dual_erc1155_receiver::{ DualCaseERC1155Receiver, DualCaseERC1155ReceiverTrait };
 
   //
   // Storage
@@ -401,12 +401,12 @@ mod ERC1155 {
       amount: u256,
       data: Span<felt252>
     ) {
-      let ERC165 = IERC165Dispatcher { contract_address: to };
+      let ERC165 = DualCaseERC165 { contract_address: to };
 
       if (ERC165.supports_interface(erc1155::interface::IERC1155_RECEIVER_ID)) {
         // TODO: add casing fallback mechanism
 
-        let ERC1155Receiver = IERC1155ReceiverDispatcher { contract_address: to };
+        let ERC1155Receiver = DualCaseERC1155Receiver { contract_address: to };
 
         let response = ERC1155Receiver.on_erc1155_received(:operator, :from, :id, value: amount, :data);
         assert(response == erc1155::interface::ON_ERC1155_RECEIVED_SELECTOR, 'ERC1155: safe transfer failed');
@@ -424,12 +424,12 @@ mod ERC1155 {
       amounts: Span<u256>,
       data: Span<felt252>
     ) {
-      let ERC165 = IERC165Dispatcher { contract_address: to };
+      let ERC165 = DualCaseERC165 { contract_address: to };
 
       if (ERC165.supports_interface(erc1155::interface::IERC1155_RECEIVER_ID)) {
         // TODO: add casing fallback mechanism
 
-        let ERC1155Receiver = IERC1155ReceiverDispatcher { contract_address: to };
+        let ERC1155Receiver = DualCaseERC1155Receiver { contract_address: to };
 
         let response = ERC1155Receiver.on_erc1155_batch_received(:operator, :from, :ids, values: amounts, :data);
         assert(response == erc1155::interface::ON_ERC1155_BATCH_RECEIVED_SELECTOR, 'ERC1155: safe transfer failed');
