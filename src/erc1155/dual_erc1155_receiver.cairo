@@ -25,7 +25,7 @@ trait DualCaseERC1155ReceiverTrait {
     id: u256,
     value: u256,
     data: Span<felt252>
-  ) -> u32;
+  ) -> felt252;
 
   fn on_erc1155_batch_received(
     self: @DualCaseERC1155Receiver,
@@ -34,7 +34,7 @@ trait DualCaseERC1155ReceiverTrait {
     ids: Span<u256>,
     values: Span<u256>,
     data: Span<felt252>
-  ) -> u32;
+  ) -> felt252;
 }
 
 impl DualCaseERC1155ReceiverImpl of DualCaseERC1155ReceiverTrait {
@@ -45,7 +45,7 @@ impl DualCaseERC1155ReceiverImpl of DualCaseERC1155ReceiverTrait {
     id: u256,
     value: u256,
     data: Span<felt252>
-  ) -> u32 {
+  ) -> felt252 {
     let mut args = ArrayTrait::new();
     args.append_serde(operator);
     args.append_serde(from);
@@ -68,7 +68,7 @@ impl DualCaseERC1155ReceiverImpl of DualCaseERC1155ReceiverTrait {
     ids: Span<u256>,
     values: Span<u256>,
     data: Span<felt252>
-  ) -> u32 {
+  ) -> felt252 {
     let mut args = ArrayTrait::new();
     args.append_serde(operator);
     args.append_serde(from);

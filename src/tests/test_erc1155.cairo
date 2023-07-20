@@ -5,18 +5,18 @@ use array::{ ArrayTrait, SpanTrait, SpanCopy, SpanSerde };
 use traits::Into;
 use zeroable::Zeroable;
 use integer::u256_from_felt252;
-use rules_utils::introspection::erc165::IERC165;
-use rules_utils::introspection::erc165;
+use rules_utils::introspection::src5::SRC5;
+use rules_utils::introspection::interface::{ ISRC5, ISRC5_ID };
 
 // locals
-use rules_erc1155::erc1155;
+use rules_erc1155::erc1155::interface;
 use rules_erc1155::erc1155::{ ERC1155, ERC1155ABIDispatcher, ERC1155ABIDispatcherTrait };
 use rules_erc1155::erc1155::interface::IERC1155;
 use super::utils;
 use rules_utils::utils::partial_eq::SpanPartialEq;
 use super::mocks::account::Account;
 use super::mocks::erc1155_receiver::{ ERC1155Receiver, ERC1155NonReceiver, SUCCESS, FAILURE };
-use rules_erc1155::erc1155::erc1155::ERC1155::{ ContractState as ERC1155ContractState, HelperTrait };
+use rules_erc1155::erc1155::erc1155::ERC1155::{ ContractState as ERC1155ContractState, InternalTrait };
 
 fn URI() -> Span<felt252> {
   let mut uri = ArrayTrait::new();
@@ -169,11 +169,9 @@ fn test_constructor() {
 
   assert(erc1155.balance_of(RECIPIENT(), TOKEN_ID()) == 0.into(), 'Balance should be zero');
 
-  assert(erc1155.supports_interface(erc1155::interface::IERC1155_ID), 'Missing interface ID');
-  assert(erc1155.supports_interface(erc1155::interface::IERC1155_METADATA_ID), 'missing interface ID');
-  assert(erc1155.supports_interface(erc165::IERC165_ID), 'missing interface ID');
-
-  assert(!erc1155.supports_interface(erc165::INVALID_ID), 'invalid interface ID');
+  assert(erc1155.supports_interface(interface::IERC1155_ID), 'Missing interface ID');
+  assert(erc1155.supports_interface(interface::IERC1155_METADATA_ID), 'missing interface ID');
+  assert(erc1155.supports_interface(ISRC5_ID), 'missing interface ID');
 }
 
 #[test]
@@ -187,11 +185,9 @@ fn test_initialize() {
 
   assert(erc1155.balance_of(RECIPIENT(), TOKEN_ID()) == 0.into(), 'Balance should be zero');
 
-  assert(erc1155.supports_interface(erc1155::interface::IERC1155_ID), 'Missing interface ID');
-  assert(erc1155.supports_interface(erc1155::interface::IERC1155_METADATA_ID), 'missing interface ID');
-  assert(erc1155.supports_interface(erc165::IERC165_ID), 'missing interface ID');
-
-  assert(!erc1155.supports_interface(erc165::INVALID_ID), 'invalid interface ID');
+  assert(erc1155.supports_interface(interface::IERC1155_ID), 'Missing interface ID');
+  assert(erc1155.supports_interface(interface::IERC1155_METADATA_ID), 'missing interface ID');
+  assert(erc1155.supports_interface(ISRC5_ID), 'missing interface ID');
 }
 
 //
@@ -910,7 +906,7 @@ fn test__burn_batch_from_owner() {
 }
 
 //
-// Helpers
+// Internals
 //
 
 // Transfer

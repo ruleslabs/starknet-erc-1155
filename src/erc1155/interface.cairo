@@ -1,10 +1,10 @@
 use array::SpanSerde;
 
-const IERC1155_ID: u32 = 0xd9b67a26_u32;
-const IERC1155_METADATA_ID: u32 = 0x0e89341c_u32;
-const IERC1155_RECEIVER_ID: u32 = 0x4e2312e0_u32;
-const ON_ERC1155_RECEIVED_SELECTOR: u32 = 0xf23a6e61_u32;
-const ON_ERC1155_BATCH_RECEIVED_SELECTOR: u32 = 0xbc197c81_u32;
+const IERC1155_ID: felt252 = 0xd9b67a26;
+const IERC1155_METADATA_ID: felt252 = 0x0e89341c;
+const IERC1155_RECEIVER_ID: felt252 = 0x4e2312e0;
+const ON_ERC1155_RECEIVED_SELECTOR: felt252 = 0xf23a6e61;
+const ON_ERC1155_BATCH_RECEIVED_SELECTOR: felt252 = 0xbc197c81;
 
 #[starknet::interface]
 trait IERC1155<TContractState> {
@@ -51,7 +51,7 @@ trait IERC1155Receiver<TContractState> {
     id: u256,
     value: u256,
     data: Span<felt252>
-  ) -> u32;
+  ) -> felt252;
 
   fn on_erc1155_batch_received(
     ref self: TContractState,
@@ -60,7 +60,7 @@ trait IERC1155Receiver<TContractState> {
     ids: Span<u256>,
     values: Span<u256>,
     data: Span<felt252>
-  ) -> u32;
+  ) -> felt252;
 }
 
 #[starknet::interface]
@@ -72,7 +72,7 @@ trait IERC1155ReceiverCamel<TContractState> {
     id: u256,
     value: u256,
     data: Span<felt252>
-  ) -> u32;
+  ) -> felt252;
 
   fn onERC1155BatchReceived(
     ref self: TContractState,
@@ -81,5 +81,5 @@ trait IERC1155ReceiverCamel<TContractState> {
     ids: Span<u256>,
     values: Span<u256>,
     data: Span<felt252>
-  ) -> u32;
+  ) -> felt252;
 }

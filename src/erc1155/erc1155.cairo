@@ -2,7 +2,7 @@
 trait ERC1155ABI<TContractState> {
   fn uri(self: @TContractState, token_id: u256) -> Span<felt252>;
 
-  fn supports_interface(self: @TContractState, interface_id: u32) -> bool;
+  fn supports_interface(self: @TContractState, interface_id: felt252) -> bool;
 
   fn balance_of(self: @TContractState, account: starknet::ContractAddress, id: u256) -> u256;
 
@@ -43,14 +43,15 @@ mod ERC1155 {
   use zeroable::Zeroable;
   use starknet::contract_address::ContractAddressZeroable;
   use rules_account::account;
-  use rules_utils::introspection::erc165;
-  use rules_utils::introspection::erc165::{ ERC165, IERC165 };
+  use rules_utils::introspection::src5::SRC5;
+  use rules_utils::introspection::interface::ISRC5;
+  use rules_account::account::interface::ISRC6_ID;
 
   // Dispatchers
-  use rules_utils::introspection::dual_erc165::{ DualCaseERC165, DualCaseERC165Trait };
+  use rules_utils::introspection::dual_src5::{ DualCaseSRC5, DualCaseSRC5Trait };
 
   // local
-  use rules_erc1155::erc1155;
+  use rules_erc1155::erc1155::interface;
   use rules_erc1155::erc1155::interface::IERC1155;
   use rules_utils::utils::storage::Felt252SpanStorageAccess;
 
@@ -126,7 +127,7 @@ mod ERC1155 {
   //
 
   #[external(v0)]
-  impl IERC1155Impl of erc1155::interface::IERC1155<ContractState> {
+  impl IERC1155Impl of interface::IERC1155<ContractState> {
     fn uri(self: @ContractState, token_id: u256) -> Span<felt252> {
       self._uri.read()
     }
@@ -208,31 +209,31 @@ mod ERC1155 {
   }
 
   //
-  // IERC165 impl
+  // ISRC5 impl
   //
 
   #[external(v0)]
-  impl IERC165Impl of erc165::IERC165<ContractState> {
-    fn supports_interface(self: @ContractState, interface_id: u32) -> bool {
+  impl ISRC5Impl of ISRC5<ContractState> {
+    fn supports_interface(self: @ContractState, interface_id: felt252) -> bool {
       if (
-        (interface_id == erc1155::interface::IERC1155_ID) |
-        (interface_id == erc1155::interface::IERC1155_METADATA_ID)
+        (interface_id == interface::IERC1155_ID) |
+        (interface_id == interface::IERC1155_METADATA_ID)
       ) {
         true
       } else {
-        let erc165_self = ERC165::unsafe_new_contract_state();
+        let src5_self = SRC5::unsafe_new_contract_state();
 
-        erc165_self.supports_interface(:interface_id)
+        src5_self.supports_interface(:interface_id)
       }
     }
   }
 
   //
-  // Helpers
+  // Internals
   //
 
   #[generate_trait]
-  impl HelperImpl of HelperTrait {
+  impl InternalImpl of InternalTrait {
     fn initializer(ref self: ContractState, uri_: Span<felt252>) {
       self._set_uri(uri_);
     }
@@ -401,17 +402,17 @@ mod ERC1155 {
       amount: u256,
       data: Span<felt252>
     ) {
-      let ERC165 = DualCaseERC165 { contract_address: to };
+      let SRC5 = DualCaseSRC5 { contract_address: to };
 
-      if (ERC165.supports_interface(erc1155::interface::IERC1155_RECEIVER_ID)) {
+      if (SRC5.supports_interface(interface::IERC1155_RECEIVER_ID)) {
         // TODO: add casing fallback mechanism
 
         let ERC1155Receiver = DualCaseERC1155Receiver { contract_address: to };
 
         let response = ERC1155Receiver.on_erc1155_received(:operator, :from, :id, value: amount, :data);
-        assert(response == erc1155::interface::ON_ERC1155_RECEIVED_SELECTOR, 'ERC1155: safe transfer failed');
+        assert(response == interface::ON_ERC1155_RECEIVED_SELECTOR, 'ERC1155: safe transfer failed');
       } else {
-        assert(ERC165.supports_interface(account::interface::IACCOUNT_ID), 'ERC1155: safe transfer failed');
+        assert(SRC5.supports_interface(ISRC6_ID), 'ERC1155: safe transfer failed');
       }
     }
 
@@ -424,17 +425,17 @@ mod ERC1155 {
       amounts: Span<u256>,
       data: Span<felt252>
     ) {
-      let ERC165 = DualCaseERC165 { contract_address: to };
+      let SRC5 = DualCaseSRC5 { contract_address: to };
 
-      if (ERC165.supports_interface(erc1155::interface::IERC1155_RECEIVER_ID)) {
+      if (SRC5.supports_interface(interface::IERC1155_RECEIVER_ID)) {
         // TODO: add casing fallback mechanism
 
         let ERC1155Receiver = DualCaseERC1155Receiver { contract_address: to };
 
         let response = ERC1155Receiver.on_erc1155_batch_received(:operator, :from, :ids, values: amounts, :data);
-        assert(response == erc1155::interface::ON_ERC1155_BATCH_RECEIVED_SELECTOR, 'ERC1155: safe transfer failed');
+        assert(response == interface::ON_ERC1155_BATCH_RECEIVED_SELECTOR, 'ERC1155: safe transfer failed');
       } else {
-        assert(ERC165.supports_interface(account::interface::IACCOUNT_ID), 'ERC1155: safe transfer failed');
+        assert(SRC5.supports_interface(ISRC6_ID), 'ERC1155: safe transfer failed');
       }
     }
 
