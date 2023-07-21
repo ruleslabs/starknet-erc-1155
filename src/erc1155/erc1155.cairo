@@ -128,10 +128,6 @@ mod ERC1155 {
 
   #[external(v0)]
   impl IERC1155Impl of interface::IERC1155<ContractState> {
-    fn uri(self: @ContractState, token_id: u256) -> Span<felt252> {
-      self._uri.read()
-    }
-
     fn balance_of(self: @ContractState, account: starknet::ContractAddress, id: u256) -> u256 {
       self._balances.read((id, account))
     }
@@ -205,6 +201,70 @@ mod ERC1155 {
       );
 
       self._safe_batch_transfer_from(:from, :to, :ids, :amounts, :data);
+    }
+  }
+
+  //
+  // IERC1155 Camel impl
+  //
+
+  #[external(v0)]
+  impl IERC1155CamelImpl of interface::IERC1155Camel<ContractState> {
+    fn balanceOf(self: @ContractState, account: starknet::ContractAddress, id: u256) -> u256 {
+      self.balance_of(:account, :id)
+    }
+
+    fn balanceOfBatch(
+      self: @ContractState,
+      accounts: Span<starknet::ContractAddress>,
+      ids: Span<u256>
+    ) -> Array<u256> {
+      self.balance_of_batch(:accounts, :ids)
+    }
+
+    fn isApprovedForAll(
+      self: @ContractState,
+      account: starknet::ContractAddress,
+      operator: starknet::ContractAddress
+    ) -> bool {
+      self.is_approved_for_all(:account, :operator)
+    }
+
+    fn setApprovalForAll(ref self: ContractState, operator: starknet::ContractAddress, approved: bool) {
+      self.set_approval_for_all(:operator, :approved);
+    }
+
+    fn safeTransferFrom(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      id: u256,
+      amount: u256,
+      data: Span<felt252>
+    ) {
+      self.safe_transfer_from(:from, :to, :id, :amount, :data);
+    }
+
+    fn safeBatchTransferFrom(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      ids: Span<u256>,
+      amounts: Span<u256>,
+      data: Span<felt252>
+    ) {
+      self.safe_batch_transfer_from(:from, :to, :ids, :amounts, :data);
+    }
+  }
+
+  //
+  // IERC1155 Metadata impl
+  //
+
+  #[external(v0)]
+  impl IERC1155MetadataImpl of interface::IERC1155Metadata<ContractState> {
+    fn uri(self: @ContractState, token_id: u256) -> Span<felt252> {
+      self._uri.read()
     }
   }
 
