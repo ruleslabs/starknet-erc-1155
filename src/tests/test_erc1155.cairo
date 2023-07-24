@@ -15,7 +15,13 @@ use rules_erc1155::erc1155::interface::{ IERC1155, IERC1155Camel, IERC1155Metada
 use super::utils;
 use rules_utils::utils::partial_eq::SpanPartialEq;
 use super::mocks::account::{ Account, AccountCamel };
-use super::mocks::erc1155_receiver::{ ERC1155Receiver, ERC1155ReceiverCamel, ERC1155NonReceiver, SUCCESS, FAILURE };
+use super::mocks::erc1155_receiver_mocks::{
+  SnakeERC1155ReceiverMock,
+  CamelERC1155ReceiverMock,
+  ERC1155NonReceiver,
+  SUCCESS,
+  FAILURE,
+};
 use rules_erc1155::erc1155::erc1155::ERC1155::InternalTrait as ERC1155InternalTrait;
 
 // Dispatchers
@@ -152,11 +158,11 @@ fn setup_dispatcher(uri: Span<felt252>) -> ERC1155ABIDispatcher {
 }
 
 fn setup_receiver() -> starknet::ContractAddress {
-  utils::deploy(ERC1155Receiver::TEST_CLASS_HASH, ArrayTrait::new())
+  utils::deploy(SnakeERC1155ReceiverMock::TEST_CLASS_HASH, ArrayTrait::new())
 }
 
 fn setup_camel_receiver() -> starknet::ContractAddress {
-  utils::deploy(ERC1155ReceiverCamel::TEST_CLASS_HASH, ArrayTrait::new())
+  utils::deploy(CamelERC1155ReceiverMock::TEST_CLASS_HASH, ArrayTrait::new())
 }
 
 fn setup_account() -> starknet::ContractAddress {
