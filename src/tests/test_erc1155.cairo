@@ -7,13 +7,13 @@ use zeroable::Zeroable;
 use integer::u256_from_felt252;
 use rules_utils::introspection::src5::SRC5;
 use rules_utils::introspection::interface::{ ISRC5, ISRC5_ID };
+use rules_utils::utils::partial_eq::SpanPartialEq;
 
 // locals
 use rules_erc1155::erc1155::interface;
 use rules_erc1155::erc1155::ERC1155;
-use rules_erc1155::erc1155::interface::{ IERC1155, IERC1155Camel, IERC1155Metadata };
+use rules_erc1155::erc1155::interface::{ IERC1155, IERC1155CamelOnly, IERC1155Metadata };
 use super::utils;
-use rules_utils::utils::partial_eq::SpanPartialEq;
 use super::mocks::account::{ Account, AccountCamel };
 use super::mocks::erc1155_receiver_mocks::{
   SnakeERC1155ReceiverMock,
@@ -277,7 +277,7 @@ fn test_balance_of_batch() {
   erc1155._mint(to: *accounts.at(2), id: *ids.at(2), amount: *amounts.at(2), data: DATA(success: true));
 
   assert(
-    erc1155.balance_of_batch(accounts: accounts.span(), ids: ids.span()).span() == amounts.span(),
+    erc1155.balance_of_batch(accounts: accounts.span(), ids: ids.span()) == amounts.span(),
     'Balances should be amounts'
   );
 }
@@ -310,7 +310,7 @@ fn test_balanceOfBatch() {
   erc1155._mint(to: *accounts.at(2), id: *ids.at(2), amount: *amounts.at(2), data: DATA(success: true));
 
   assert(
-    erc1155.balanceOfBatch(accounts: accounts.span(), ids: ids.span()).span() == amounts.span(),
+    erc1155.balanceOfBatch(accounts: accounts.span(), ids: ids.span()) == amounts.span(),
     'Balances should be amounts'
   );
 }
@@ -1106,7 +1106,7 @@ fn test_safe_batch_transfer_from_to_owner() {
   owners.append(owner);
 
   assert(
-    erc1155.balance_of_batch(accounts: owners.span(), ids: TOKEN_IDS()).span() == amounts,
+    erc1155.balance_of_batch(accounts: owners.span(), ids: TOKEN_IDS()) == amounts,
     'Balances of owner before'
   );
 
@@ -1114,7 +1114,7 @@ fn test_safe_batch_transfer_from_to_owner() {
   erc1155.safe_batch_transfer_from(from: owner, to: owner, ids: token_ids, :amounts, data: DATA(success: true));
 
   assert(
-    erc1155.balance_of_batch(accounts: owners.span(), ids: TOKEN_IDS()).span() == amounts,
+    erc1155.balance_of_batch(accounts: owners.span(), ids: TOKEN_IDS()) == amounts,
     'Balances of owner after'
   );
 }
@@ -1323,7 +1323,7 @@ fn test_safeBatchTransferFrom_to_owner() {
   owners.append(owner);
 
   assert(
-    erc1155.balance_of_batch(accounts: owners.span(), ids: TOKEN_IDS()).span() == amounts,
+    erc1155.balance_of_batch(accounts: owners.span(), ids: TOKEN_IDS()) == amounts,
     'Balances of owner before'
   );
 
@@ -1331,7 +1331,7 @@ fn test_safeBatchTransferFrom_to_owner() {
   erc1155.safeBatchTransferFrom(from: owner, to: owner, ids: token_ids, :amounts, data: DATA(success: true));
 
   assert(
-    erc1155.balance_of_batch(accounts: owners.span(), ids: TOKEN_IDS()).span() == amounts,
+    erc1155.balance_of_batch(accounts: owners.span(), ids: TOKEN_IDS()) == amounts,
     'Balances of owner after'
   );
 }

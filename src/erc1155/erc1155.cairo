@@ -6,7 +6,7 @@ trait ERC1155ABI<TContractState> {
 
   fn balance_of(self: @TContractState, account: starknet::ContractAddress, id: u256) -> u256;
 
-  fn balance_of_batch(self: @TContractState, accounts: Span<starknet::ContractAddress>, ids: Span<u256>) -> Array<u256>;
+  fn balance_of_batch(self: @TContractState, accounts: Span<starknet::ContractAddress>, ids: Span<u256>) -> Span<u256>;
 
   fn is_approved_for_all(
     self: @TContractState,
@@ -44,7 +44,7 @@ mod ERC1155 {
   use starknet::contract_address::ContractAddressZeroable;
   use rules_account::account;
   use rules_utils::introspection::src5::SRC5;
-  use rules_utils::introspection::interface::ISRC5;
+  use rules_utils::introspection::interface::{ ISRC5, ISRC5Camel };
   use rules_account::account::interface::ISRC6_ID;
 
   // Dispatchers
@@ -136,7 +136,7 @@ mod ERC1155 {
       self: @ContractState,
       accounts: Span<starknet::ContractAddress>,
       ids: Span<u256>
-    ) -> Array<u256> {
+    ) -> Span<u256> {
       assert(accounts.len() == ids.len(), 'ERC1155: bad accounts & ids len');
 
       let mut batch_balances = ArrayTrait::<u256>::new();
@@ -152,7 +152,7 @@ mod ERC1155 {
         i += 1;
       };
 
-      batch_balances
+      batch_balances.span()
     }
 
     fn is_approved_for_all(
@@ -209,7 +209,7 @@ mod ERC1155 {
   //
 
   #[external(v0)]
-  impl IERC1155CamelImpl of interface::IERC1155Camel<ContractState> {
+  impl IERC1155CamelOnlyImpl of interface::IERC1155CamelOnly<ContractState> {
     fn balanceOf(self: @ContractState, account: starknet::ContractAddress, id: u256) -> u256 {
       self.balance_of(:account, :id)
     }
@@ -218,7 +218,7 @@ mod ERC1155 {
       self: @ContractState,
       accounts: Span<starknet::ContractAddress>,
       ids: Span<u256>
-    ) -> Array<u256> {
+    ) -> Span<u256> {
       self.balance_of_batch(:accounts, :ids)
     }
 
@@ -285,6 +285,17 @@ mod ERC1155 {
 
         src5_self.supports_interface(:interface_id)
       }
+    }
+  }
+
+  //
+  // ISRC5 Camel impl
+  //
+
+  #[external(v0)]
+  impl ISRC5CamelImpl of ISRC5Camel<ContractState> {
+    fn supportsInterface(self: @ContractState, interfaceId: felt252) -> bool {
+      self.supports_interface(interface_id: interfaceId)
     }
   }
 

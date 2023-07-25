@@ -10,7 +10,7 @@ const ON_ERC1155_BATCH_RECEIVED_SELECTOR: felt252 = 0xa7aec3d60ba1b10aa9601c01e2
 trait IERC1155<TContractState> {
   fn balance_of(self: @TContractState, account: starknet::ContractAddress, id: u256) -> u256;
 
-  fn balance_of_batch(self: @TContractState, accounts: Span<starknet::ContractAddress>, ids: Span<u256>) -> Array<u256>;
+  fn balance_of_batch(self: @TContractState, accounts: Span<starknet::ContractAddress>, ids: Span<u256>) -> Span<u256>;
 
   fn is_approved_for_all(
     self: @TContractState,
@@ -40,10 +40,10 @@ trait IERC1155<TContractState> {
 }
 
 #[starknet::interface]
-trait IERC1155Camel<TContractState> {
+trait IERC1155CamelOnly<TContractState> {
   fn balanceOf(self: @TContractState, account: starknet::ContractAddress, id: u256) -> u256;
 
-  fn balanceOfBatch(self: @TContractState, accounts: Span<starknet::ContractAddress>, ids: Span<u256>) -> Array<u256>;
+  fn balanceOfBatch(self: @TContractState, accounts: Span<starknet::ContractAddress>, ids: Span<u256>) -> Span<u256>;
 
   fn isApprovedForAll(
     self: @TContractState,
@@ -71,6 +71,8 @@ trait IERC1155Camel<TContractState> {
     data: Span<felt252>
   );
 }
+
+use IERC1155CamelOnly as IERC1155Camel;
 
 // IERC1155 Metadata
 

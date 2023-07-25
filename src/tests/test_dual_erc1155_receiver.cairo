@@ -110,7 +110,7 @@ fn setup_erc1155_receiver_panic() -> (DualCaseERC1155Receiver, DualCaseERC1155Re
 //
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(20000000)]
 fn test_dual_on_erc1155_received() {
   let (dispatcher, _) = setup_snake_receiver();
 
@@ -121,7 +121,7 @@ fn test_dual_on_erc1155_received() {
 }
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(20000000)]
 fn test_dual_on_erc1155_batch_received() {
   let (dispatcher, _) = setup_snake_receiver();
 
@@ -138,7 +138,7 @@ fn test_dual_on_erc1155_batch_received() {
 }
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(20000000)]
 #[should_panic(expected: ('Some error', 'ENTRYPOINT_FAILED', ))]
 fn test_dual_on_erc1155_received_exists_and_panics() {
   let (dispatcher, _) = setup_erc1155_receiver_panic();
@@ -147,7 +147,7 @@ fn test_dual_on_erc1155_received_exists_and_panics() {
 }
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(20000000)]
 #[should_panic(expected: ('Some error', 'ENTRYPOINT_FAILED', ))]
 fn test_dual_on_erc1155_batch_received_exists_and_panics() {
   let (dispatcher, _) = setup_erc1155_receiver_panic();
@@ -160,7 +160,7 @@ fn test_dual_on_erc1155_batch_received_exists_and_panics() {
 //
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(20000000)]
 fn test_dual_onERC1155Received() {
   let (dispatcher, _) = setup_camel_receiver();
 
@@ -171,7 +171,7 @@ fn test_dual_onERC1155Received() {
 }
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(20000000)]
 fn test_dual_onERC1155BatchReceived() {
   let (dispatcher, _) = setup_camel_receiver();
 
@@ -188,7 +188,7 @@ fn test_dual_onERC1155BatchReceived() {
 }
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(20000000)]
 #[should_panic(expected: ('Some error', 'ENTRYPOINT_FAILED', ))]
 fn test_dual_onERC1155Received_exists_and_panics() {
   let (_, dispatcher) = setup_erc1155_receiver_panic();
@@ -197,7 +197,7 @@ fn test_dual_onERC1155Received_exists_and_panics() {
 }
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(20000000)]
 #[should_panic(expected: ('Some error', 'ENTRYPOINT_FAILED', ))]
 fn test_dual_onERC1155BatchReceived_exists_and_panics() {
   let (_, dispatcher) = setup_erc1155_receiver_panic();
@@ -210,7 +210,7 @@ fn test_dual_onERC1155BatchReceived_exists_and_panics() {
 //
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(20000000)]
 #[should_panic(expected: ('ENTRYPOINT_NOT_FOUND', ))]
 fn test_dual_no_on_erc1155_received() {
   let dispatcher = setup_non_erc1155_receiver();
@@ -219,7 +219,7 @@ fn test_dual_no_on_erc1155_received() {
 }
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(20000000)]
 #[should_panic(expected: ('ENTRYPOINT_NOT_FOUND', ))]
 fn test_dual_no_on_erc1155_batch_received() {
   let dispatcher = setup_non_erc1155_receiver();
