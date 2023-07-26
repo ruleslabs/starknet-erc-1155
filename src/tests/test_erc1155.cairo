@@ -132,7 +132,7 @@ fn setup_with_owner(owner: starknet::ContractAddress) -> ERC1155::ContractState 
 }
 
 fn setup_dispatcher(uri: Span<felt252>) -> ERC1155ABIDispatcher {
-  let calldata = array![];
+  let mut calldata = array![];
 
   calldata.append_serde(uri);
 
