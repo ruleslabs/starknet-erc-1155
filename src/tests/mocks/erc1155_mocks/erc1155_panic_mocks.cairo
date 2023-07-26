@@ -31,7 +31,7 @@ mod SnakeERC1155PanicMock {
       ids: Span<u256>
     ) -> Span<u256> {
       panic_with_felt252('Some error');
-      ArrayTrait::<u256>::new().span()
+      array![].span()
     }
 
     fn is_approved_for_all(
@@ -78,7 +78,7 @@ mod SnakeERC1155PanicMock {
   impl IERC1155MetadataImpl of IERC1155Metadata<ContractState> {
     fn uri(self: @ContractState, token_id: u256) -> Span<felt252> {
       panic_with_felt252('Some error');
-      ArrayTrait::<felt252>::new().span()
+      array![].span()
     }
   }
 
@@ -128,7 +128,7 @@ mod CamelERC1155PanicMock {
       ids: Span<u256>
     ) -> Span<u256> {
       panic_with_felt252('Some error');
-      ArrayTrait::<u256>::new().span()
+      array![].span()
     }
 
     fn isApprovedForAll(
@@ -175,7 +175,7 @@ mod CamelERC1155PanicMock {
   impl IERC1155MetadataImpl of IERC1155Metadata<ContractState> {
     fn uri(self: @ContractState, token_id: u256) -> Span<felt252> {
       panic_with_felt252('Some error');
-      ArrayTrait::<felt252>::new().span()
+      array![].span()
     }
   }
 

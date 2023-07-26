@@ -76,14 +76,14 @@ trait DualCaseERC1155Trait {
 
 impl DualCaseERC1155Impl of DualCaseERC1155Trait {
   fn uri(self: @DualCaseERC1155, token_id: u256) -> Span<felt252> {
-    let mut args = ArrayTrait::new();
+    let mut args = array![];
     args.append_serde(token_id);
 
     starknet::call_contract_syscall(*self.contract_address, selectors::uri, args.span()).unwrap_and_cast()
   }
 
   fn balance_of(self: @DualCaseERC1155, account: starknet::ContractAddress, id: u256) -> u256 {
-    let mut args = ArrayTrait::new();
+    let mut args = array![];
     args.append_serde(account);
     args.append_serde(id);
 
@@ -96,7 +96,7 @@ impl DualCaseERC1155Impl of DualCaseERC1155Trait {
     accounts: Span<starknet::ContractAddress>,
     ids: Span<u256>
   ) -> Span<u256> {
-    let mut args = ArrayTrait::new();
+    let mut args = array![];
     args.append_serde(accounts);
     args.append_serde(ids);
 
@@ -113,7 +113,7 @@ impl DualCaseERC1155Impl of DualCaseERC1155Trait {
     account: starknet::ContractAddress,
     operator: starknet::ContractAddress
   ) -> bool {
-    let mut args = ArrayTrait::new();
+    let mut args = array![];
     args.append_serde(account);
     args.append_serde(operator);
 
@@ -126,7 +126,7 @@ impl DualCaseERC1155Impl of DualCaseERC1155Trait {
   }
 
   fn set_approval_for_all(self: @DualCaseERC1155, operator: starknet::ContractAddress, approved: bool) {
-    let mut args = ArrayTrait::new();
+    let mut args = array![];
     args.append_serde(operator);
     args.append_serde(approved);
 
@@ -146,7 +146,7 @@ impl DualCaseERC1155Impl of DualCaseERC1155Trait {
     amount: u256,
     data: Span<felt252>
   ) {
-    let mut args = ArrayTrait::new();
+    let mut args = array![];
     args.append_serde(from);
     args.append_serde(to);
     args.append_serde(id);
@@ -169,7 +169,7 @@ impl DualCaseERC1155Impl of DualCaseERC1155Trait {
     amounts: Span<u256>,
     data: Span<felt252>
   ) {
-    let mut args = ArrayTrait::new();
+    let mut args = array![];
     args.append_serde(from);
     args.append_serde(to);
     args.append_serde(ids);
@@ -185,7 +185,7 @@ impl DualCaseERC1155Impl of DualCaseERC1155Trait {
   }
 
   fn supports_interface(self: @DualCaseERC1155, interface_id: felt252) -> bool {
-    let mut args = ArrayTrait::new();
+    let mut args = array![];
     args.append_serde(interface_id);
 
     try_selector_with_fallback(

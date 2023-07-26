@@ -46,7 +46,7 @@ impl DualCaseERC1155ReceiverImpl of DualCaseERC1155ReceiverTrait {
     value: u256,
     data: Span<felt252>
   ) -> felt252 {
-    let mut args = ArrayTrait::new();
+    let mut args = array![];
     args.append_serde(operator);
     args.append_serde(from);
     args.append_serde(id);
@@ -69,7 +69,7 @@ impl DualCaseERC1155ReceiverImpl of DualCaseERC1155ReceiverTrait {
     values: Span<u256>,
     data: Span<felt252>
   ) -> felt252 {
-    let mut args = ArrayTrait::new();
+    let mut args = array![];
     args.append_serde(operator);
     args.append_serde(from);
     args.append_serde(ids);

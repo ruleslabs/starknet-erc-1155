@@ -32,31 +32,19 @@ const TOKEN_ID: u256 = 7;
 const AMOUNT: u256 = 7;
 
 fn TOKEN_IDS() -> Span<u256> {
-  let mut token_ids = ArrayTrait::new();
-
-  token_ids.append(TOKEN_ID);
-
-  token_ids.span()
+  array![TOKEN_ID].span()
 }
 
 fn AMOUNTS() -> Span<u256> {
-  let mut amounts = ArrayTrait::new();
-
-  amounts.append(AMOUNT);
-
-  amounts.span()
+  array![AMOUNT].span()
 }
 
 fn DATA(success: bool) -> Span<felt252> {
-  let mut data = ArrayTrait::new();
-
   if success {
-    data.append(SUCCESS);
+    array![SUCCESS].span()
   } else {
-    data.append(FAILURE);
+    array![FAILURE].span()
   }
-
-  data.span()
 }
 
 fn OWNER() -> starknet::ContractAddress {
@@ -72,19 +60,19 @@ fn OPERATOR() -> starknet::ContractAddress {
 //
 
 fn setup_snake_receiver() -> (DualCaseERC1155Receiver, IERC1155ReceiverDispatcher) {
-  let contract_address = utils::deploy(SnakeERC1155ReceiverMock::TEST_CLASS_HASH, calldata: ArrayTrait::new());
+  let contract_address = utils::deploy(SnakeERC1155ReceiverMock::TEST_CLASS_HASH, calldata: array![]);
 
   (DualCaseERC1155Receiver { contract_address }, IERC1155ReceiverDispatcher { contract_address })
 }
 
 fn setup_camel_receiver() -> (DualCaseERC1155Receiver, IERC1155ReceiverCamelDispatcher) {
-  let contract_address = utils::deploy(CamelERC1155ReceiverMock::TEST_CLASS_HASH, calldata: ArrayTrait::new());
+  let contract_address = utils::deploy(CamelERC1155ReceiverMock::TEST_CLASS_HASH, calldata: array![]);
 
   (DualCaseERC1155Receiver { contract_address }, IERC1155ReceiverCamelDispatcher { contract_address })
 }
 
 fn setup_non_erc1155_receiver() -> DualCaseERC1155Receiver {
-  let contract_address = utils::deploy(NonImplementingMock::TEST_CLASS_HASH, calldata: ArrayTrait::new());
+  let contract_address = utils::deploy(NonImplementingMock::TEST_CLASS_HASH, calldata: array![]);
 
   DualCaseERC1155Receiver { contract_address }
 }
@@ -92,11 +80,11 @@ fn setup_non_erc1155_receiver() -> DualCaseERC1155Receiver {
 fn setup_erc1155_receiver_panic() -> (DualCaseERC1155Receiver, DualCaseERC1155Receiver) {
   let snake_contract_address = utils::deploy(
     SnakeERC1155ReceiverPanicMock::TEST_CLASS_HASH,
-    calldata: ArrayTrait::new()
+    calldata: array![]
   );
   let camel_contract_address = utils::deploy(
     CamelERC1155ReceiverPanicMock::TEST_CLASS_HASH,
-    calldata: ArrayTrait::new()
+    calldata: array![]
   );
 
   (

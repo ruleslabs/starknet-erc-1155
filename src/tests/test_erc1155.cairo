@@ -8,6 +8,7 @@ use integer::u256_from_felt252;
 use rules_utils::introspection::src5::SRC5;
 use rules_utils::introspection::interface::{ ISRC5, ISRC5_ID };
 use rules_utils::utils::partial_eq::SpanPartialEq;
+use rules_utils::utils::serde::SerdeTraitExt;
 
 // locals
 use rules_erc1155::erc1155::interface;
@@ -28,13 +29,7 @@ use rules_erc1155::erc1155::erc1155::ERC1155::InternalTrait as ERC1155InternalTr
 use rules_erc1155::erc1155::{ ERC1155ABIDispatcher, ERC1155ABIDispatcherTrait };
 
 fn URI() -> Span<felt252> {
-  let mut uri = ArrayTrait::new();
-
-  uri.append(111);
-  uri.append(222);
-  uri.append(333);
-
-  uri.span()
+  array![111, 222, 333].span()
 }
 
 // TOKEN ID
@@ -56,12 +51,7 @@ fn TOKEN_ID() -> u256 {
 }
 
 fn TOKEN_IDS() -> Span<u256> {
-  let mut ids = ArrayTrait::<u256>::new();
-  ids.append(TOKEN_ID_1());
-  ids.append(TOKEN_ID_2());
-  ids.append(TOKEN_ID_3());
-
-  ids.span()
+  array![TOKEN_ID_1(), TOKEN_ID_2(), TOKEN_ID_3()].span()
 }
 
 // AMOUNT
@@ -83,12 +73,7 @@ fn AMOUNT() -> u256 {
 }
 
 fn AMOUNTS() -> Span<u256> {
-  let mut amounts = ArrayTrait::<u256>::new();
-  amounts.append(AMOUNT_1());
-  amounts.append(AMOUNT_2());
-  amounts.append(AMOUNT_3());
-
-  amounts.span()
+  array![AMOUNT_1(), AMOUNT_2(), AMOUNT_3()].span()
 }
 
 // HOLDERS
@@ -120,13 +105,11 @@ fn OTHER() -> starknet::ContractAddress {
 // DATA
 
 fn DATA(success: bool) -> Span<felt252> {
-  let mut data = ArrayTrait::new();
   if success {
-    data.append(SUCCESS);
+    array![SUCCESS].span()
   } else {
-    data.append(FAILURE);
+    array![FAILURE].span()
   }
-  data.span()
 }
 
 //
@@ -149,28 +132,28 @@ fn setup_with_owner(owner: starknet::ContractAddress) -> ERC1155::ContractState 
 }
 
 fn setup_dispatcher(uri: Span<felt252>) -> ERC1155ABIDispatcher {
-  let mut calldata = ArrayTrait::new();
+  let mut calldata = array![];
 
-  uri.serialize(ref output: calldata);
+  calldata.append_serde(uri);
 
   let mut erc1155_contract_address = utils::deploy(ERC1155::TEST_CLASS_HASH, calldata);
   ERC1155ABIDispatcher { contract_address: erc1155_contract_address }
 }
 
 fn setup_receiver() -> starknet::ContractAddress {
-  utils::deploy(SnakeERC1155ReceiverMock::TEST_CLASS_HASH, ArrayTrait::new())
+  utils::deploy(SnakeERC1155ReceiverMock::TEST_CLASS_HASH, array![])
 }
 
 fn setup_camel_receiver() -> starknet::ContractAddress {
-  utils::deploy(CamelERC1155ReceiverMock::TEST_CLASS_HASH, ArrayTrait::new())
+  utils::deploy(CamelERC1155ReceiverMock::TEST_CLASS_HASH, array![])
 }
 
 fn setup_account() -> starknet::ContractAddress {
-  utils::deploy(Account::TEST_CLASS_HASH, ArrayTrait::new())
+  utils::deploy(Account::TEST_CLASS_HASH, array![])
 }
 
 fn setup_camel_account() -> starknet::ContractAddress {
-  utils::deploy(Account::TEST_CLASS_HASH, ArrayTrait::new())
+  utils::deploy(Account::TEST_CLASS_HASH, array![])
 }
 
 //
@@ -256,20 +239,11 @@ fn test_balanceOf_zero() {
 fn test_balance_of_batch() {
   let mut erc1155 = setup();
 
-  let mut accounts = ArrayTrait::<starknet::ContractAddress>::new();
-  accounts.append(setup_receiver());
-  accounts.append(setup_receiver());
-  accounts.append(setup_receiver());
+  let accounts = array![setup_receiver(), setup_receiver(), setup_receiver()];
 
-  let mut ids = ArrayTrait::<u256>::new();
-  ids.append('id1'.into());
-  ids.append('id2'.into());
-  ids.append('id3'.into());
+  let ids = array!['id1', 'id2', 'id3'];
 
-  let mut amounts = ArrayTrait::<u256>::new();
-  amounts.append('amount1'.into());
-  amounts.append('amount2'.into());
-  amounts.append('amount3'.into());
+  let amounts = array!['amount1', 'amount2', 'amount3'];
 
   // Mint
   erc1155._mint(to: *accounts.at(0), id: *ids.at(0), amount: *amounts.at(0), data: DATA(success: true));
@@ -289,20 +263,11 @@ fn test_balance_of_batch() {
 fn test_balanceOfBatch() {
   let mut erc1155 = setup();
 
-  let mut accounts = ArrayTrait::<starknet::ContractAddress>::new();
-  accounts.append(setup_receiver());
-  accounts.append(setup_receiver());
-  accounts.append(setup_receiver());
+  let accounts = array![setup_receiver(), setup_receiver(), setup_receiver()];
 
-  let mut ids = ArrayTrait::<u256>::new();
-  ids.append('id1'.into());
-  ids.append('id2'.into());
-  ids.append('id3'.into());
+  let ids = array!['id1', 'id2', 'id3'];
 
-  let mut amounts = ArrayTrait::<u256>::new();
-  amounts.append('amount1'.into());
-  amounts.append('amount2'.into());
-  amounts.append('amount3'.into());
+  let amounts = array!['amount1', 'amount2', 'amount3'];
 
   // Mint
   erc1155._mint(to: *accounts.at(0), id: *ids.at(0), amount: *amounts.at(0), data: DATA(success: true));
@@ -326,16 +291,10 @@ fn test_balanceOfBatch() {
 fn test_set_uri() {
   let mut erc1155 = setup();
 
-  let mut new_URI = ArrayTrait::new();
-  new_URI.append('random');
-  new_URI.append(0);
-  new_URI.append('felt252');
-  new_URI.append(0);
-  new_URI.append('elements');
-  new_URI.append('.');
-  erc1155._set_uri(new_uri: new_URI.span());
+  let new_uri = array!['random', 0, 'felt252', 0, 'elements', '.'].span();
+  erc1155._set_uri(new_uri: new_uri);
 
-  assert(new_URI.span() == erc1155.uri(0.into()), 'uri should be new_URI');
+  assert(new_uri == erc1155.uri(0), 'uri should be new_URI');
 }
 
 #[test]
@@ -343,7 +302,7 @@ fn test_set_uri() {
 fn test_set_empty_uri() {
   let mut erc1155 = setup();
 
-  let empty_uri = ArrayTrait::new().span();
+  let empty_uri = array![].span();
   erc1155._set_uri(new_uri: empty_uri);
 
   assert(empty_uri == erc1155.uri(0.into()), 'uri should be empty');
@@ -624,7 +583,7 @@ fn test_safe_transfer_from_to_receiver_failure_camel() {
 fn test_safe_transfer_from_to_non_receiver() {
   let owner = setup_receiver();
   let mut erc1155 = setup_with_owner(owner);
-  let recipient = utils::deploy(ERC1155NonReceiver::TEST_CLASS_HASH, ArrayTrait::new());
+  let recipient = utils::deploy(ERC1155NonReceiver::TEST_CLASS_HASH, array![]);
   let token_id = TOKEN_ID();
   let amount = AMOUNT();
 
@@ -847,7 +806,7 @@ fn test_safeTransferFrom_to_receiver_failure_camel() {
 fn test_safeTransferFrom_to_non_receiver() {
   let owner = setup_receiver();
   let mut erc1155 = setup_with_owner(owner);
-  let recipient = utils::deploy(ERC1155NonReceiver::TEST_CLASS_HASH, ArrayTrait::new());
+  let recipient = utils::deploy(ERC1155NonReceiver::TEST_CLASS_HASH, array![]);
   let token_id = TOKEN_ID();
   let amount = AMOUNT();
 
@@ -1029,7 +988,7 @@ fn test_safe_batch_transfer_from_to_receiver_failure_camel() {
 fn test_safe_batch_transfer_from_to_non_receiver() {
   let owner = setup_receiver();
   let mut erc1155 = setup_with_owner(owner);
-  let recipient = utils::deploy(ERC1155NonReceiver::TEST_CLASS_HASH, ArrayTrait::new());
+  let recipient = utils::deploy(ERC1155NonReceiver::TEST_CLASS_HASH, array![]);
   let token_ids = TOKEN_IDS();
   let amounts = AMOUNTS();
 
@@ -1100,10 +1059,7 @@ fn test_safe_batch_transfer_from_to_owner() {
   let token_ids = TOKEN_IDS();
   let amounts = AMOUNTS();
 
-  let mut owners = ArrayTrait::<starknet::ContractAddress>::new();
-  owners.append(owner);
-  owners.append(owner);
-  owners.append(owner);
+  let owners = array![owner, owner, owner];
 
   assert(
     erc1155.balance_of_batch(accounts: owners.span(), ids: TOKEN_IDS()) == amounts,
@@ -1246,7 +1202,7 @@ fn test_safeBatchTransferFrom_to_receiver_failure_camel() {
 fn test_safeBatchTransferFrom_to_non_receiver() {
   let owner = setup_receiver();
   let mut erc1155 = setup_with_owner(owner);
-  let recipient = utils::deploy(ERC1155NonReceiver::TEST_CLASS_HASH, ArrayTrait::new());
+  let recipient = utils::deploy(ERC1155NonReceiver::TEST_CLASS_HASH, array![]);
   let token_ids = TOKEN_IDS();
   let amounts = AMOUNTS();
 
@@ -1317,10 +1273,7 @@ fn test_safeBatchTransferFrom_to_owner() {
   let token_ids = TOKEN_IDS();
   let amounts = AMOUNTS();
 
-  let mut owners = ArrayTrait::<starknet::ContractAddress>::new();
-  owners.append(owner);
-  owners.append(owner);
-  owners.append(owner);
+  let owners = array![owner, owner, owner];
 
   assert(
     erc1155.balance_of_batch(accounts: owners.span(), ids: TOKEN_IDS()) == amounts,
@@ -1468,7 +1421,7 @@ fn test__mint_to_account_camel() {
 fn test__mint_to_non_receiver() {
   let mut erc1155 = setup();
 
-  let recipient = utils::deploy(ERC1155NonReceiver::TEST_CLASS_HASH, ArrayTrait::new());
+  let recipient = utils::deploy(ERC1155NonReceiver::TEST_CLASS_HASH, array![]);
   let token_id = TOKEN_ID();
   let amount = AMOUNT();
 
@@ -1616,7 +1569,7 @@ fn test__mint_batch_to_account_camel() {
 fn test__mint_batch_to_non_receiver() {
   let mut erc1155 = setup();
 
-  let recipient = utils::deploy(ERC1155NonReceiver::TEST_CLASS_HASH, ArrayTrait::new());
+  let recipient = utils::deploy(ERC1155NonReceiver::TEST_CLASS_HASH, array![]);
   let token_ids = TOKEN_IDS();
   let amounts = AMOUNTS();
 

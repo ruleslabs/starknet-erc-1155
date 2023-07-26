@@ -29,27 +29,15 @@ const TOKEN_ID: u256 = 7;
 const AMOUNT: u256 = 7;
 
 fn TOKEN_IDS() -> Span<u256> {
-  let mut token_ids = ArrayTrait::new();
-
-  token_ids.append(TOKEN_ID);
-
-  token_ids.span()
+  array![TOKEN_ID].span()
 }
 
 fn AMOUNTS() -> Span<u256> {
-  let mut amounts = ArrayTrait::new();
-
-  amounts.append(AMOUNT);
-
-  amounts.span()
+  array![AMOUNT].span()
 }
 
 fn URI() -> Span<felt252> {
-  let mut uri = ArrayTrait::new();
-
-  uri.append(333);
-
-  uri.span()
+  array![333].span()
 }
 
 fn OWNER() -> starknet::ContractAddress {
@@ -69,21 +57,15 @@ fn OPERATOR() -> starknet::ContractAddress {
 }
 
 fn DATA(success: bool) -> Span<felt252> {
-  let mut data = ArrayTrait::new();
   if success {
-    data.append_serde(SUCCESS);
+    array![SUCCESS].span()
   } else {
-    data.append_serde(FAILURE);
+    array![FAILURE].span()
   }
-  data.span()
 }
 
 fn ADDRESSES(address: starknet::ContractAddress) -> Span<starknet::ContractAddress> {
-  let mut addresses = ArrayTrait::new();
-
-  addresses.append(address);
-
-  addresses.span()
+  array![address].span()
 }
 
 //
@@ -91,42 +73,40 @@ fn ADDRESSES(address: starknet::ContractAddress) -> Span<starknet::ContractAddre
 //
 
 fn setup_snake(receiver: starknet::ContractAddress) -> (DualCaseERC1155, IERC1155Dispatcher) {
-  let mut calldata = ArrayTrait::new();
+  let mut calldata = array![];
   calldata.append_serde(URI());
   calldata.append_serde(TOKEN_ID);
   calldata.append_serde(AMOUNT);
   calldata.append_serde(DATA(true));
 
   testing::set_caller_address(receiver);
-
   let contract_address = utils::deploy(SnakeERC1155Mock::TEST_CLASS_HASH, calldata);
 
   (DualCaseERC1155 { contract_address }, IERC1155Dispatcher { contract_address })
 }
 
 fn setup_camel(receiver: starknet::ContractAddress) -> (DualCaseERC1155, IERC1155CamelOnlyDispatcher) {
-  let mut calldata = ArrayTrait::new();
+  let mut calldata = array![];
   calldata.append_serde(URI());
   calldata.append_serde(TOKEN_ID);
   calldata.append_serde(AMOUNT);
   calldata.append_serde(DATA(true));
 
   testing::set_caller_address(receiver);
-
   let contract_address = utils::deploy(CamelERC1155Mock::TEST_CLASS_HASH, calldata);
 
   (DualCaseERC1155 { contract_address }, IERC1155CamelOnlyDispatcher { contract_address })
 }
 
 fn setup_non_erc1155() -> DualCaseERC1155 {
-  let contract_address = utils::deploy(NonImplementingMock::TEST_CLASS_HASH, calldata: ArrayTrait::new());
+  let contract_address = utils::deploy(NonImplementingMock::TEST_CLASS_HASH, calldata: array![]);
 
   DualCaseERC1155 { contract_address }
 }
 
 fn setup_erc1155_panic() -> (DualCaseERC1155, DualCaseERC1155) {
-  let snake_contract_address = utils::deploy(SnakeERC1155PanicMock::TEST_CLASS_HASH, ArrayTrait::new());
-  let camel_contract_address = utils::deploy(CamelERC1155PanicMock::TEST_CLASS_HASH, ArrayTrait::new());
+  let snake_contract_address = utils::deploy(SnakeERC1155PanicMock::TEST_CLASS_HASH, array![]);
+  let camel_contract_address = utils::deploy(CamelERC1155PanicMock::TEST_CLASS_HASH, array![]);
 
   (
     DualCaseERC1155 { contract_address: snake_contract_address },
@@ -135,7 +115,7 @@ fn setup_erc1155_panic() -> (DualCaseERC1155, DualCaseERC1155) {
 }
 
 fn setup_receiver() -> starknet::ContractAddress {
-  utils::deploy(SnakeERC1155ReceiverMock::TEST_CLASS_HASH, ArrayTrait::new())
+  utils::deploy(SnakeERC1155ReceiverMock::TEST_CLASS_HASH, array![])
 }
 
 //
