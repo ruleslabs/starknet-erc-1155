@@ -1,7 +1,6 @@
-use array::ArrayTrait;
+use array::{ ArrayTrait, SpanPartialEq };
 use starknet::testing;
 use rules_utils::utils::serde::SerdeTraitExt;
-use rules_utils::utils::partial_eq::SpanPartialEq;
 
 // locals
 use rules_erc1155::erc1155::interface::IERC1155_ID;
@@ -79,7 +78,7 @@ fn setup_snake(receiver: starknet::ContractAddress) -> (DualCaseERC1155, IERC115
   calldata.append_serde(AMOUNT);
   calldata.append_serde(DATA(true));
 
-  testing::set_caller_address(receiver);
+  testing::set_contract_address(receiver);
   let contract_address = utils::deploy(SnakeERC1155Mock::TEST_CLASS_HASH, calldata);
 
   (DualCaseERC1155 { contract_address }, IERC1155Dispatcher { contract_address })
@@ -92,7 +91,7 @@ fn setup_camel(receiver: starknet::ContractAddress) -> (DualCaseERC1155, IERC115
   calldata.append_serde(AMOUNT);
   calldata.append_serde(DATA(true));
 
-  testing::set_caller_address(receiver);
+  testing::set_contract_address(receiver);
   let contract_address = utils::deploy(CamelERC1155Mock::TEST_CLASS_HASH, calldata);
 
   (DualCaseERC1155 { contract_address }, IERC1155CamelOnlyDispatcher { contract_address })

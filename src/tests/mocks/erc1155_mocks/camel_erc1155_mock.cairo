@@ -107,7 +107,7 @@ mod CamelERC1155Mock {
   }
 
   //
-  // ISRC5 impl
+  // ISRC5 Camel impl
   //
 
   #[external(v0)]

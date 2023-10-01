@@ -1,13 +1,12 @@
 use serde::Serde;
 use clone::Clone;
 use starknet::testing;
-use array::{ ArrayTrait, SpanTrait, SpanCopy, SpanSerde };
+use array::{ ArrayTrait, SpanTrait, SpanCopy, SpanSerde, SpanPartialEq };
 use traits::Into;
 use zeroable::Zeroable;
 use integer::u256_from_felt252;
 use rules_utils::introspection::src5::SRC5;
 use rules_utils::introspection::interface::{ ISRC5, ISRC5_ID };
-use rules_utils::utils::partial_eq::SpanPartialEq;
 use rules_utils::utils::serde::SerdeTraitExt;
 
 // locals
