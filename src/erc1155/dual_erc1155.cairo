@@ -29,6 +29,12 @@ mod selectors {
   const safe_batch_transfer_from: felt252 = 0x3556ee435402e506fc85acb898a9acb9daf2855fdec20673ec29a8cb1196cb7;
   const safeBatchTransferFrom: felt252 = 0x23cc35d21c405aa7adf1f3afcf558aec0dbe6a45cade725420609aef87e9035;
 
+  const transfer_from: felt252 = 0x3704ffe8fba161be0e994951751a5033b1462b918ff785c0a636be718dfdb68;
+  const transferFrom: felt252 = 0x41b033f4a31df8067c24d1e9b550a2ce75fd4a29e1147af9752174f0e6cb20;
+
+  const batch_transfer_from: felt252 = 0x1655e9417d4dde9cefb5e88c40d679475f1dc56cf2bc5b1e71889ab95b360ca;
+  const batchTransferFrom: felt252 = 0xdf3dbd81b2111157de71891fc18d72efee473067b6a4115c72e3daa9fcbd22;
+
   const supports_interface: felt252 = 0xfe80f537b66d12a00b6d3c072b44afbb716e78dde5c3f0ef116ee93d3e3283;
   const supportsInterface: felt252 = 0x29e211664c0b63c79638fbea474206ca74016b3e9a3dc4f9ac300ffd8bdf2cd;
 }
@@ -69,6 +75,22 @@ trait DualCaseERC1155Trait {
     ids: Span<u256>,
     amounts: Span<u256>,
     data: Span<felt252>
+  );
+
+  fn transfer_from(
+    self: @DualCaseERC1155,
+    from: starknet::ContractAddress,
+    to: starknet::ContractAddress,
+    id: u256,
+    amount: u256,
+  );
+
+  fn batch_transfer_from(
+    self: @DualCaseERC1155,
+    from: starknet::ContractAddress,
+    to: starknet::ContractAddress,
+    ids: Span<u256>,
+    amounts: Span<u256>,
   );
 
   fn supports_interface(self: @DualCaseERC1155, interface_id: felt252) -> bool;
@@ -180,6 +202,48 @@ impl DualCaseERC1155Impl of DualCaseERC1155Trait {
       *self.contract_address,
       selectors::safe_batch_transfer_from,
       selectors::safeBatchTransferFrom,
+      args.span()
+    ).unwrap_syscall();
+  }
+
+  fn transfer_from(
+    self: @DualCaseERC1155,
+    from: starknet::ContractAddress,
+    to: starknet::ContractAddress,
+    id: u256,
+    amount: u256,
+  ) {
+    let mut args = array![];
+    args.append_serde(from);
+    args.append_serde(to);
+    args.append_serde(id);
+    args.append_serde(amount);
+
+    try_selector_with_fallback(
+      *self.contract_address,
+      selectors::transfer_from,
+      selectors::transferFrom,
+      args.span()
+    ).unwrap_syscall();
+  }
+
+  fn batch_transfer_from(
+    self: @DualCaseERC1155,
+    from: starknet::ContractAddress,
+    to: starknet::ContractAddress,
+    ids: Span<u256>,
+    amounts: Span<u256>,
+  ) {
+    let mut args = array![];
+    args.append_serde(from);
+    args.append_serde(to);
+    args.append_serde(ids);
+    args.append_serde(amounts);
+
+    try_selector_with_fallback(
+      *self.contract_address,
+      selectors::batch_transfer_from,
+      selectors::batchTransferFrom,
       args.span()
     ).unwrap_syscall();
   }

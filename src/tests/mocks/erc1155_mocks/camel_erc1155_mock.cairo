@@ -91,6 +91,30 @@ mod CamelERC1155Mock {
 
       erc1155_self.safeBatchTransferFrom(:from, :to, :ids, :amounts, :data);
     }
+
+    fn transferFrom(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      id: u256,
+      amount: u256,
+    ) {
+      let mut erc1155_self = ERC1155::unsafe_new_contract_state();
+
+      erc1155_self.transferFrom(:from, :to, :id, :amount);
+    }
+
+    fn batchTransferFrom(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      ids: Span<u256>,
+      amounts: Span<u256>,
+    ) {
+      let mut erc1155_self = ERC1155::unsafe_new_contract_state();
+
+      erc1155_self.batchTransferFrom(:from, :to, :ids, :amounts);
+    }
   }
 
   //

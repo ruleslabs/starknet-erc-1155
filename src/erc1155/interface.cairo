@@ -37,6 +37,22 @@ trait IERC1155<TContractState> {
     amounts: Span<u256>,
     data: Span<felt252>
   );
+
+  fn transfer_from(
+    ref self: TContractState,
+    from: starknet::ContractAddress,
+    to: starknet::ContractAddress,
+    id: u256,
+    amount: u256,
+  );
+
+  fn batch_transfer_from(
+    ref self: TContractState,
+    from: starknet::ContractAddress,
+    to: starknet::ContractAddress,
+    ids: Span<u256>,
+    amounts: Span<u256>,
+  );
 }
 
 #[starknet::interface]
@@ -69,6 +85,22 @@ trait IERC1155CamelOnly<TContractState> {
     ids: Span<u256>,
     amounts: Span<u256>,
     data: Span<felt252>
+  );
+
+  fn transferFrom(
+    ref self: TContractState,
+    from: starknet::ContractAddress,
+    to: starknet::ContractAddress,
+    id: u256,
+    amount: u256,
+  );
+
+  fn batchTransferFrom(
+    ref self: TContractState,
+    from: starknet::ContractAddress,
+    to: starknet::ContractAddress,
+    ids: Span<u256>,
+    amounts: Span<u256>,
   );
 }
 

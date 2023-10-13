@@ -202,6 +202,38 @@ mod ERC1155 {
 
       self._safe_batch_transfer_from(:from, :to, :ids, :amounts, :data);
     }
+
+    fn transfer_from(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      id: u256,
+      amount: u256,
+    ) {
+      let caller = starknet::get_caller_address();
+      assert(
+        (from == caller) | self.is_approved_for_all(account: from, operator: caller),
+        'ERC1155: caller not allowed'
+      );
+
+      self._transfer_from(:from, :to, :id, :amount);
+    }
+
+    fn batch_transfer_from(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      ids: Span<u256>,
+      amounts: Span<u256>,
+    ) {
+      let caller = starknet::get_caller_address();
+      assert(
+        (from == caller) | self.is_approved_for_all(account: from, operator: caller),
+        'ERC1155: caller not allowed'
+      );
+
+      self._batch_transfer_from(:from, :to, :ids, :amounts);
+    }
   }
 
   //
@@ -254,6 +286,26 @@ mod ERC1155 {
       data: Span<felt252>
     ) {
       self.safe_batch_transfer_from(:from, :to, :ids, :amounts, :data);
+    }
+
+    fn transferFrom(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      id: u256,
+      amount: u256,
+    ) {
+      self.transfer_from(:from, :to, :id, :amount);
+    }
+
+    fn batchTransferFrom(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      ids: Span<u256>,
+      amounts: Span<u256>,
+    ) {
+      self.batch_transfer_from(:from, :to, :ids, :amounts);
     }
   }
 
@@ -312,7 +364,7 @@ mod ERC1155 {
     fn _mint(ref self: ContractState, to: starknet::ContractAddress, id: u256, amount: u256, data: Span<felt252>) {
       assert(to.is_non_zero(), 'ERC1155: mint to 0 addr');
       let (ids, amounts) = self._as_singleton_spans(id, amount);
-      self._update(from: Zeroable::zero(), :to, :ids, :amounts, :data);
+      self._safe_update(from: Zeroable::zero(), :to, :ids, :amounts, :data);
     }
 
     fn _mint_batch(
@@ -323,7 +375,7 @@ mod ERC1155 {
       data: Span<felt252>
     ) {
       assert(to.is_non_zero(), 'ERC1155: mint to 0 addr');
-      self._update(from: Zeroable::zero(), :to, :ids, :amounts, :data);
+      self._safe_update(from: Zeroable::zero(), :to, :ids, :amounts, :data);
     }
 
     // Burn
@@ -331,12 +383,12 @@ mod ERC1155 {
     fn _burn(ref self: ContractState, from: starknet::ContractAddress, id: u256, amount: u256) {
       assert(from.is_non_zero(), 'ERC1155: burn from 0 addr');
       let (ids, amounts) = self._as_singleton_spans(id, amount);
-      self._update(:from, to: Zeroable::zero(), :ids, :amounts, data: array![].span());
+      self._update(:from, to: Zeroable::zero(), :ids, :amounts);
     }
 
     fn _burn_batch(ref self: ContractState, from: starknet::ContractAddress, ids: Span<u256>, amounts: Span<u256>) {
       assert(from.is_non_zero(), 'ERC1155: burn from 0 addr');
-      self._update(:from, to: Zeroable::zero(), :ids, :amounts, data: array![].span());
+      self._update(:from, to: Zeroable::zero(), :ids, :amounts);
     }
 
     // Setters
@@ -365,13 +417,37 @@ mod ERC1155 {
 
     // Balances update
 
-    fn _update(
+    fn _safe_update(
       ref self: ContractState,
       from: starknet::ContractAddress,
       to: starknet::ContractAddress,
       mut ids: Span<u256>,
       amounts: Span<u256>,
       data: Span<felt252>
+    ) {
+      self._update(:from, :to, :ids, :amounts);
+
+      let operator = starknet::get_caller_address();
+
+      // Safe transfer check
+      if (to.is_non_zero()) {
+        if (ids.len() == 1) {
+          let id = *ids.at(0);
+          let amount = *amounts.at(0);
+
+          self._do_safe_transfer_acceptance_check(:operator, :from, :to, :id, :amount, :data);
+        } else {
+          self._do_safe_batch_transfer_acceptance_check(:operator, :from, :to, :ids, :amounts, :data);
+        }
+      }
+    }
+
+    fn _update(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      mut ids: Span<u256>,
+      amounts: Span<u256>,
     ) {
       assert(ids.len() == amounts.len(), 'ERC1155: bad ids & amounts len');
 
@@ -404,33 +480,26 @@ mod ERC1155 {
         i += 1;
       };
 
-      // Safe transfer check
-      if (to.is_non_zero()) {
-        if (ids.len() == 1) {
-          let id = *ids.at(0);
-          let amount = *amounts.at(0);
+      // Transfer events
+      if (ids.len() == 1) {
+        let id = *ids.at(0);
+        let amount = *amounts.at(0);
 
-          // Event
-          self.emit(
-            Event::TransferSingle(
-              TransferSingle { operator, from, to, id, value: amount }
-            )
-          );
-
-          self._do_safe_transfer_acceptance_check(:operator, :from, :to, :id, :amount, :data);
-        } else {
-
-          // Event
-          self.emit(
-            Event::TransferBatch(
-              TransferBatch { operator, from, to, ids, values: amounts }
-            )
-          );
-
-          self._do_safe_batch_transfer_acceptance_check(:operator, :from, :to, :ids, :amounts, :data);
-        }
+        self.emit(
+          Event::TransferSingle(
+            TransferSingle { operator, from, to, id, value: amount }
+          )
+        );
+      } else {
+        self.emit(
+          Event::TransferBatch(
+            TransferBatch { operator, from, to, ids, values: amounts }
+          )
+        );
       }
     }
+
+    // Safe transfers
 
     fn _safe_transfer_from(
       ref self: ContractState,
@@ -445,7 +514,7 @@ mod ERC1155 {
 
       let (ids, amounts) = self._as_singleton_spans(id, amount);
 
-      self._update(:from, :to, :ids, :amounts, :data);
+      self._safe_update(:from, :to, :ids, :amounts, :data);
     }
 
     fn _safe_batch_transfer_from(
@@ -459,7 +528,37 @@ mod ERC1155 {
       assert(to.is_non_zero(), 'ERC1155: transfer to 0 addr');
       assert(from.is_non_zero(), 'ERC1155: transfer from 0 addr');
 
-      self._update(:from, :to, :ids, :amounts, :data);
+      self._safe_update(:from, :to, :ids, :amounts, :data);
+    }
+
+    // Unsafe transfers
+
+    fn _transfer_from(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      id: u256,
+      amount: u256,
+    ) {
+      assert(to.is_non_zero(), 'ERC1155: transfer to 0 addr');
+      assert(from.is_non_zero(), 'ERC1155: transfer from 0 addr');
+
+      let (ids, amounts) = self._as_singleton_spans(id, amount);
+
+      self._update(:from, :to, :ids, :amounts);
+    }
+
+    fn _batch_transfer_from(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      ids: Span<u256>,
+      amounts: Span<u256>,
+    ) {
+      assert(to.is_non_zero(), 'ERC1155: transfer to 0 addr');
+      assert(from.is_non_zero(), 'ERC1155: transfer from 0 addr');
+
+      self._update(:from, :to, :ids, :amounts);
     }
 
     // Safe transfer check

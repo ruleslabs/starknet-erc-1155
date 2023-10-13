@@ -91,6 +91,30 @@ mod SnakeERC1155Mock {
 
       erc1155_self.safe_batch_transfer_from(:from, :to, :ids, :amounts, :data);
     }
+
+    fn transfer_from(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      id: u256,
+      amount: u256,
+    ) {
+      let mut erc1155_self = ERC1155::unsafe_new_contract_state();
+
+      erc1155_self.transfer_from(:from, :to, :id, :amount);
+    }
+
+    fn batch_transfer_from(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      ids: Span<u256>,
+      amounts: Span<u256>,
+    ) {
+      let mut erc1155_self = ERC1155::unsafe_new_contract_state();
+
+      erc1155_self.batch_transfer_from(:from, :to, :ids, :amounts);
+    }
   }
 
   //

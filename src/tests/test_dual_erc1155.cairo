@@ -351,6 +351,74 @@ fn test_dual_safe_batch_transfer_from_exists_and_panics() {
   dispatcher.safe_batch_transfer_from(OWNER(), RECIPIENT(), TOKEN_IDS(), AMOUNTS(), DATA(true));
 }
 
+// transfer_from
+
+#[test]
+#[available_gas(20000000)]
+fn test_dual_transfer_from() {
+  let receiver = setup_receiver();
+  let other_receiver = setup_receiver();
+  let (dispatcher, target) = setup_snake(:receiver);
+
+  testing::set_contract_address(receiver);
+  dispatcher.transfer_from(from: receiver, to: other_receiver, id: TOKEN_ID, amount: AMOUNT);
+
+  assert(target.balance_of(account: receiver, id: TOKEN_ID) == 0, 'Should transfer token');
+  assert(target.balance_of(account: other_receiver, id: TOKEN_ID) == AMOUNT, 'Should transfer token');
+}
+
+#[test]
+#[available_gas(20000000)]
+#[should_panic(expected: ('ENTRYPOINT_NOT_FOUND', ))]
+fn test_dual_no_transfer_from() {
+  let dispatcher = setup_non_erc1155();
+
+  dispatcher.transfer_from(OWNER(), RECIPIENT(), TOKEN_ID, AMOUNT);
+}
+
+#[test]
+#[available_gas(20000000)]
+#[should_panic(expected: ('Some error', 'ENTRYPOINT_FAILED', ))]
+fn test_dual_transfer_from_exists_and_panics() {
+  let (dispatcher, _) = setup_erc1155_panic();
+
+  dispatcher.transfer_from(OWNER(), RECIPIENT(), TOKEN_ID, AMOUNT);
+}
+
+// batch_transfer_from
+
+#[test]
+#[available_gas(20000000)]
+fn test_dual_batch_transfer_from() {
+  let receiver = setup_receiver();
+  let other_receiver = setup_receiver();
+  let (dispatcher, target) = setup_snake(:receiver);
+
+  testing::set_contract_address(receiver);
+  dispatcher.batch_transfer_from(from: receiver, to: other_receiver, ids: TOKEN_IDS(), amounts: AMOUNTS());
+
+  assert(target.balance_of(account: receiver, id: TOKEN_ID) == 0, 'Should transfer token');
+  assert(target.balance_of(account: other_receiver, id: TOKEN_ID) == AMOUNT, 'Should transfer token');
+}
+
+#[test]
+#[available_gas(20000000)]
+#[should_panic(expected: ('ENTRYPOINT_NOT_FOUND', ))]
+fn test_dual_no_batch_transfer_from() {
+  let dispatcher = setup_non_erc1155();
+
+  dispatcher.batch_transfer_from(OWNER(), RECIPIENT(), TOKEN_IDS(), AMOUNTS());
+}
+
+#[test]
+#[available_gas(20000000)]
+#[should_panic(expected: ('Some error', 'ENTRYPOINT_FAILED', ))]
+fn test_dual_batch_transfer_from_exists_and_panics() {
+  let (dispatcher, _) = setup_erc1155_panic();
+
+  dispatcher.batch_transfer_from(OWNER(), RECIPIENT(), TOKEN_IDS(), AMOUNTS());
+}
+
 // supports_interface
 
 #[test]

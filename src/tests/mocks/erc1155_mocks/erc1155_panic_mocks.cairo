@@ -68,6 +68,26 @@ mod SnakeERC1155PanicMock {
     ) {
       panic_with_felt252('Some error');
     }
+
+    fn transfer_from(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      id: u256,
+      amount: u256,
+    ) {
+      panic_with_felt252('Some error');
+    }
+
+    fn batch_transfer_from(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      ids: Span<u256>,
+      amounts: Span<u256>,
+    ) {
+      panic_with_felt252('Some error');
+    }
   }
 
   //
@@ -162,6 +182,26 @@ mod CamelERC1155PanicMock {
       ids: Span<u256>,
       amounts: Span<u256>,
       data: Span<felt252>
+    ) {
+      panic_with_felt252('Some error');
+    }
+
+    fn transferFrom(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      id: u256,
+      amount: u256,
+    ) {
+      panic_with_felt252('Some error');
+    }
+
+    fn batchTransferFrom(
+      ref self: ContractState,
+      from: starknet::ContractAddress,
+      to: starknet::ContractAddress,
+      ids: Span<u256>,
+      amounts: Span<u256>,
     ) {
       panic_with_felt252('Some error');
     }
