@@ -367,6 +367,12 @@ mod ERC1155 {
       self._safe_update(from: Zeroable::zero(), :to, :ids, :amounts, :data);
     }
 
+    fn _unsafe_mint(ref self: ContractState, to: starknet::ContractAddress, id: u256, amount: u256) {
+      assert(to.is_non_zero(), 'ERC1155: mint to 0 addr');
+      let (ids, amounts) = self._as_singleton_spans(id, amount);
+      self._update(from: Zeroable::zero(), :to, :ids, :amounts);
+    }
+
     fn _mint_batch(
       ref self: ContractState,
       to: starknet::ContractAddress,

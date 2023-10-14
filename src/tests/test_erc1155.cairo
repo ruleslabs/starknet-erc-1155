@@ -1897,6 +1897,53 @@ fn test_multiple__mint_to_receiver() {
   assert_state_after_mint(ref :erc1155, :recipient, :token_id, :amount);
 }
 
+//
+// Unsafe Mint
+//
+
+#[test]
+#[available_gas(20000000)]
+fn test__unsafe_mint() {
+  let mut erc1155 = setup();
+
+  let recipient = RECIPIENT();
+  let token_id = TOKEN_ID();
+  let amount = AMOUNT();
+
+  assert_state_before_mint(ref :erc1155, :recipient, :token_id);
+
+  erc1155._unsafe_mint(to: recipient, id: token_id, :amount);
+
+  assert_state_after_mint(ref :erc1155, :recipient, :token_id, :amount);
+}
+
+#[test]
+#[available_gas(20000000)]
+#[should_panic(expected: ('ERC1155: mint to 0 addr', ))]
+fn test__unsafe_mint_to_zero() {
+  let mut erc1155 = setup();
+
+  erc1155._unsafe_mint(to: ZERO(), id: TOKEN_ID(), amount: AMOUNT());
+}
+
+#[test]
+#[available_gas(20000000)]
+fn test_multiple__unsafe_mint() {
+  let mut erc1155 = setup();
+
+  let recipient = RECIPIENT();
+  let token_id = TOKEN_ID();
+  let amount = AMOUNT();
+
+  assert_state_before_mint(ref :erc1155, :recipient, :token_id);
+
+  erc1155._unsafe_mint(to: recipient, id: token_id, amount: AMOUNT_1());
+  erc1155._unsafe_mint(to: recipient, id: token_id, amount: AMOUNT_2());
+  erc1155._unsafe_mint(to: recipient, id: token_id, amount: AMOUNT_3());
+
+  assert_state_after_mint(ref :erc1155, :recipient, :token_id, :amount);
+}
+
 // Mint batch
 
 #[test]
