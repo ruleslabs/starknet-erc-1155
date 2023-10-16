@@ -33,6 +33,22 @@ trait ERC1155ABI<TContractState> {
     amounts: Span<u256>,
     data: Span<felt252>
   );
+
+  fn transfer_from(
+    ref self: TContractState,
+    from: starknet::ContractAddress,
+    to: starknet::ContractAddress,
+    id: u256,
+    amount: u256,
+  );
+
+  fn batch_transfer_from(
+    ref self: TContractState,
+    from: starknet::ContractAddress,
+    to: starknet::ContractAddress,
+    ids: Span<u256>,
+    amounts: Span<u256>,
+  );
 }
 
 #[starknet::contract]
