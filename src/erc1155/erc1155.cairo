@@ -345,7 +345,8 @@ mod ERC1155 {
     fn supports_interface(self: @ContractState, interface_id: felt252) -> bool {
       if (
         (interface_id == interface::IERC1155_ID) |
-        (interface_id == interface::IERC1155_METADATA_ID)
+        (interface_id == interface::IERC1155_METADATA_ID) |
+        (interface_id == interface::OLD_IERC1155_ID)
       ) {
         true
       } else {

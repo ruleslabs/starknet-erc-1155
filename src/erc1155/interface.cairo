@@ -1,5 +1,6 @@
 use array::SpanSerde;
 
+const OLD_IERC1155_ID: felt252 = 0xd9b67a26;
 const IERC1155_ID: felt252 = 0xdef955e77a50cefb767c39f5e3bacb4d24f75e2de1d930ae214fcd6f7d42f3;
 const IERC1155_METADATA_ID: felt252 = 0x3d7b708e1a6bd1a69c8d4deedf7ad6adc6cda9cc81bd97c49dc1c82e172d1fc;
 const IERC1155_RECEIVER_ID: felt252 = 0x15e8665b5af20040c3af1670509df02eb916375cdf7d8cbaf7bd553a257515e;
