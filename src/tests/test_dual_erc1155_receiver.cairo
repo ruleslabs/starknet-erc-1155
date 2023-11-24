@@ -11,18 +11,18 @@ use super::mocks::erc1155_receiver_mocks::{
 };
 use super::mocks::non_implementing_mock::NonImplementingMock;
 
-use rules_erc1155::erc1155::interface::{ ON_ERC1155_RECEIVED_SELECTOR, ON_ERC1155_BATCH_RECEIVED_SELECTOR };
+use erc1155::erc1155::interface::{ ON_ERC1155_RECEIVED_SELECTOR, ON_ERC1155_BATCH_RECEIVED_SELECTOR };
 
 use super::utils;
 
 // Dispatchers
-use rules_erc1155::erc1155::interface::{
+use erc1155::erc1155::interface::{
   IERC1155ReceiverDispatcher,
   IERC1155ReceiverDispatcherTrait,
   IERC1155ReceiverCamelDispatcher,
   IERC1155ReceiverCamelDispatcherTrait,
 };
-use rules_erc1155::erc1155::dual_erc1155_receiver::{ DualCaseERC1155Receiver, DualCaseERC1155ReceiverTrait };
+use erc1155::erc1155::dual_erc1155_receiver::{ DualCaseERC1155Receiver, DualCaseERC1155ReceiverTrait };
 
 //
 // Constants

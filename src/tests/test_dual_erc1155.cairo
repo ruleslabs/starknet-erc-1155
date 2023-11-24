@@ -3,7 +3,7 @@ use starknet::testing;
 use rules_utils::utils::serde::SerdeTraitExt;
 
 // locals
-use rules_erc1155::erc1155::interface::IERC1155_ID;
+use erc1155::erc1155::interface::IERC1155_ID;
 
 use super::mocks::erc1155_mocks::{ SnakeERC1155Mock, CamelERC1155Mock, SnakeERC1155PanicMock, CamelERC1155PanicMock };
 use super::mocks::erc1155_receiver_mocks::{ SnakeERC1155ReceiverMock, SUCCESS, FAILURE };
@@ -12,8 +12,8 @@ use super::mocks::non_implementing_mock::NonImplementingMock;
 use super::utils;
 
 // Dispatchers
-use rules_erc1155::erc1155::dual_erc1155::{ DualCaseERC1155, DualCaseERC1155Trait, };
-use rules_erc1155::erc1155::interface::{
+use erc1155::erc1155::dual_erc1155::{ DualCaseERC1155, DualCaseERC1155Trait, };
+use erc1155::erc1155::interface::{
   IERC1155Dispatcher,
   IERC1155DispatcherTrait,
   IERC1155CamelOnlyDispatcher,

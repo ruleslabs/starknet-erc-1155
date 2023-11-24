@@ -5,7 +5,7 @@ mod SnakeERC1155PanicMock {
   use rules_utils::introspection::interface::ISRC5;
 
   //locals
-  use rules_erc1155::erc1155::interface::{ IERC1155, IERC1155Metadata };
+  use erc1155::erc1155::interface::{ IERC1155, IERC1155Metadata };
 
   //
   // Storage
@@ -122,7 +122,7 @@ mod CamelERC1155PanicMock {
   use rules_utils::introspection::interface::ISRC5Camel;
 
   //locals
-  use rules_erc1155::erc1155::interface::{ IERC1155, IERC1155Camel, IERC1155CamelOnly, IERC1155Metadata };
+  use erc1155::erc1155::interface::{ IERC1155, IERC1155Camel, IERC1155CamelOnly, IERC1155Metadata };
 
   //
   // Storage

@@ -1,7 +1,7 @@
 #[starknet::contract]
 mod SnakeERC1155ReceiverPanicMock {
   // locals
-  use rules_erc1155::erc1155::interface::IERC1155Receiver;
+  use erc1155::erc1155::interface::IERC1155Receiver;
 
   #[storage]
   struct Storage {}
@@ -37,7 +37,7 @@ mod SnakeERC1155ReceiverPanicMock {
 #[starknet::contract]
 mod CamelERC1155ReceiverPanicMock {
   // locals
-  use rules_erc1155::erc1155::interface::IERC1155ReceiverCamel;
+  use erc1155::erc1155::interface::IERC1155ReceiverCamel;
 
   #[storage]
   struct Storage {}

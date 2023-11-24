@@ -67,12 +67,12 @@ mod ERC1155 {
   use rules_utils::introspection::dual_src5::{ DualCaseSRC5, DualCaseSRC5Trait };
 
   // local
-  use rules_erc1155::erc1155::interface;
-  use rules_erc1155::erc1155::interface::IERC1155;
+  use erc1155::erc1155::interface;
+  use erc1155::erc1155::interface::IERC1155;
   use rules_utils::utils::storage::StoreSpanFelt252;
 
   // Dispatchers
-  use rules_erc1155::erc1155::dual_erc1155_receiver::{ DualCaseERC1155Receiver, DualCaseERC1155ReceiverTrait };
+  use erc1155::erc1155::dual_erc1155_receiver::{ DualCaseERC1155Receiver, DualCaseERC1155ReceiverTrait };
 
   //
   // Storage

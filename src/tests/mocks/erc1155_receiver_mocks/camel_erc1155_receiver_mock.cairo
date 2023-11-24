@@ -6,7 +6,7 @@ mod CamelERC1155ReceiverMock {
   use rules_utils::introspection::interface::ISRC5Camel;
 
   // locals
-  use rules_erc1155::erc1155::interface;
+  use erc1155::erc1155::interface;
 
   //
   // Storage

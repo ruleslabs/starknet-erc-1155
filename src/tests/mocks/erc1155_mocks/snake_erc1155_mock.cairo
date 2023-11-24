@@ -4,9 +4,9 @@ mod SnakeERC1155Mock {
   use rules_utils::introspection::interface::ISRC5;
 
   //locals
-  use rules_erc1155::erc1155::interface::{ IERC1155, IERC1155Metadata };
-  use rules_erc1155::erc1155::erc1155::ERC1155;
-  use rules_erc1155::erc1155::erc1155::ERC1155::InternalTrait as ERC1155InternalTrait;
+  use erc1155::erc1155::interface::{ IERC1155, IERC1155Metadata };
+  use erc1155::erc1155::erc1155::ERC1155;
+  use erc1155::erc1155::erc1155::ERC1155::InternalTrait as ERC1155InternalTrait;
 
   //
   // Storage

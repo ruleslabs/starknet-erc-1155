@@ -10,9 +10,9 @@ use rules_utils::introspection::interface::{ ISRC5, ISRC5_ID };
 use rules_utils::utils::serde::SerdeTraitExt;
 
 // locals
-use rules_erc1155::erc1155::interface;
-use rules_erc1155::erc1155::ERC1155;
-use rules_erc1155::erc1155::interface::{ IERC1155, IERC1155CamelOnly, IERC1155Metadata };
+use erc1155::erc1155::interface;
+use erc1155::erc1155::ERC1155;
+use erc1155::erc1155::interface::{ IERC1155, IERC1155CamelOnly, IERC1155Metadata };
 use super::utils;
 use super::mocks::account::{ Account, AccountCamel };
 use super::mocks::erc1155_receiver_mocks::{
@@ -22,10 +22,10 @@ use super::mocks::erc1155_receiver_mocks::{
   SUCCESS,
   FAILURE,
 };
-use rules_erc1155::erc1155::erc1155::ERC1155::InternalTrait as ERC1155InternalTrait;
+use erc1155::erc1155::erc1155::ERC1155::InternalTrait as ERC1155InternalTrait;
 
 // Dispatchers
-use rules_erc1155::erc1155::{ ERC1155ABIDispatcher, ERC1155ABIDispatcherTrait };
+use erc1155::erc1155::{ ERC1155ABIDispatcher, ERC1155ABIDispatcherTrait };
 
 fn URI() -> Span<felt252> {
   array![111, 222, 333].span()
